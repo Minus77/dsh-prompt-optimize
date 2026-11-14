@@ -67,10 +67,20 @@ window.__ModuleLoader__.load({
 .po-cardhead{display:flex;align-items:center;gap:6px;padding:7px 9px;min-height:34px}
 .po-cardtitle{font-size:12px;font-weight:600;color:var(--dsw-alias-label-primary);display:flex;align-items:center;gap:6px;min-width:0;flex:none}
 .po-cardtitle span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.po-meta{font-size:11px;color:var(--dsw-alias-label-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.po-meta{font-size:11px;color:var(--dsw-alias-label-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .po-chip{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:999px;font-size:11px;line-height:1;color:var(--dsw-alias-label-secondary);background:var(--dsw-alias-interactive-bg-hover);white-space:nowrap}
 .po-chip[data-tone="warn"]{color:var(--dsw-alias-state-business-primary);background:color-mix(in srgb,var(--dsw-alias-state-business-primary) 10%,transparent)}
 .po-text{margin:0;padding:0 10px 10px;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.62;color:var(--dsw-alias-label-primary);font-family:inherit}
+.po-rich{padding:0 10px 10px;font-size:12.5px;line-height:1.62;color:var(--dsw-alias-label-primary)}
+.po-rich p{margin:0 0 6px;white-space:pre-wrap;word-break:break-word}
+.po-rich p:last-child{margin-bottom:0}
+.po-rich h3,.po-rich h4,.po-rich h5,.po-rich h6{margin:9px 0 4px;font-size:12.5px;font-weight:600;line-height:1.45}
+.po-rich h3:first-child,.po-rich h4:first-child,.po-rich h5:first-child{margin-top:0}
+.po-rich ul,.po-rich ol{margin:0 0 6px;padding-left:18px}
+.po-rich li{margin:2px 0;white-space:pre-wrap;word-break:break-word}
+.po-rich strong{font-weight:600}
+.po-rich code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;padding:1px 4px;border-radius:4px;background:var(--dsw-alias-interactive-bg-hover)}
+.po-rich hr{border:0;border-top:1px solid var(--dsw-alias-border-l1);margin:9px 0}
 .po-text[data-muted="true"]{color:var(--dsw-alias-label-secondary)}
 .po-caret{display:inline-block;width:2px;height:1em;margin-left:1px;vertical-align:-2px;background:var(--dsw-alias-brand-primary);animation:po-blink 1s step-end infinite}
 @keyframes po-blink{50%{opacity:0}}
@@ -89,7 +99,7 @@ window.__ModuleLoader__.load({
 .po-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;height:28px;padding:0 11px;border:1px solid var(--dsw-alias-border-l2);border-radius:8px;background:transparent;color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
 .po-btn:hover{background:var(--dsw-alias-interactive-bg-hover)}
 .po-btn[disabled]{opacity:.45;cursor:default;background:transparent}
-.po-btn[data-variant="primary"]{background:var(--dsw-alias-button-primary-fill);border-color:transparent;color:#fff}
+.po-btn[data-variant="primary"]{background:var(--dsw-alias-button-primary-fill);border-color:transparent;color:var(--dsw-alias-label-primary-foreground,#fff)}
 .po-btn[data-variant="primary"]:hover{background:var(--dsw-alias-button-primary-hover,var(--dsw-alias-button-primary-fill));opacity:.92}
 .po-btn[data-variant="ghost"]{border-color:transparent;color:var(--dsw-alias-label-secondary)}
 .po-btn[data-variant="ghost"]:hover{color:var(--dsw-alias-label-primary)}
@@ -102,7 +112,7 @@ window.__ModuleLoader__.load({
 .po-menuitem strong{font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px}
 .po-menuitem small{font-size:11px;line-height:1.4;color:var(--dsw-alias-label-tertiary);white-space:normal}
 .po-menucheck{flex:none;width:14px;color:var(--dsw-alias-brand-primary);margin-top:2px}
-.po-diff{border-top:1px solid var(--dsw-alias-border-l1);max-height:340px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;line-height:1.55}
+.po-diff{border-top:1px solid var(--dsw-alias-border-l1);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;line-height:1.55}
 .po-row{display:flex;gap:8px;padding:1px 10px;white-space:pre-wrap;word-break:break-word}
 .po-row[data-t="add"]{background:color-mix(in srgb,var(--dsw-alias-state-success) 11%,transparent)}
 .po-row[data-t="del"]{background:color-mix(in srgb,var(--dsw-alias-state-error) 10%,transparent)}
@@ -205,6 +215,7 @@ window.__ModuleLoader__.load({
       "已复制": "Copied",
       "复制结果": "Copy result",
       "替换草稿": "Replace draft",
+        "已替换草稿 · 9 秒内可撤销": "Draft replaced · undo for 9s",
       "发送": "Send",
       "停止": "Stop",
       "重试": "Retry",
@@ -706,6 +717,71 @@ window.__ModuleLoader__.load({
       return parsed.model;
     }
 
+    const INLINE_MARK = /(\*\*[^*\n]+\*\*|__[^_\n]+__|`[^`\n]+`)/g;
+
+    function inlineMarkup(text, keyPrefix) {
+      const nodes = [];
+      let rest = 0;
+      let index = 0;
+      for (const match of String(text).matchAll(INLINE_MARK)) {
+        if (match.index > rest) nodes.push(text.slice(rest, match.index));
+        const token = match[0];
+        if (token.startsWith("`")) {
+          nodes.push(h("code", { key: `${keyPrefix}-c${index}` }, token.slice(1, -1)));
+        } else {
+          nodes.push(h("strong", { key: `${keyPrefix}-b${index}` }, token.slice(2, -2)));
+        }
+        rest = match.index + token.length;
+        index += 1;
+      }
+      if (rest < text.length) nodes.push(text.slice(rest));
+      return nodes;
+    }
+
+    /**
+     * Render the small Markdown subset the optimizer itself asks models to
+     * produce (headings, bullets, bold, inline code). Anything else stays
+     * literal text; the raw string is what gets copied or written back.
+     */
+    function renderMarkup(text, keyPrefix) {
+      const prefix = keyPrefix || "mk";
+      const lines = String(text ?? "").split("\n");
+      const blocks = [];
+      let items = null;
+      const flush = () => {
+        if (!items) return;
+        blocks.push(h(items.ordered ? "ol" : "ul", { key: `${prefix}-l${blocks.length}` },
+          items.rows.map((row, at) => h("li", { key: `${prefix}-i${at}` }, inlineMarkup(row, `${prefix}-i${at}`)))));
+        items = null;
+      };
+      lines.forEach((line, at) => {
+        const key = `${prefix}-${at}`;
+        if (/^\s*$/.test(line)) { flush(); return; }
+        if (/^\s*(---|\*\*\*|___)\s*$/.test(line)) { flush(); blocks.push(h("hr", { key })); return; }
+        const heading = /^\s{0,3}(#{1,6})\s+(.*)$/.exec(line);
+        if (heading) {
+          flush();
+          const level = Math.min(6, heading[1].length + 2);
+          blocks.push(h(`h${level}`, { key }, inlineMarkup(heading[2], key)));
+          return;
+        }
+        const bullet = /^\s*[-*•]\s+(.*)$/.exec(line);
+        const ordered = /^\s*\d+[.)]\s+(.*)$/.exec(line);
+        if (bullet || ordered) {
+          const next = { ordered: Boolean(ordered), rows: [] };
+          if (items && items.ordered === next.ordered) next.rows = items.rows;
+          else flush();
+          next.rows.push((bullet || ordered)[1]);
+          items = next;
+          return;
+        }
+        flush();
+        blocks.push(h("p", { key }, inlineMarkup(line, key)));
+      });
+      flush();
+      return blocks;
+    }
+
     function Button({ children, variant, disabled, onClick, title, icon, ...rest }) {
       return h("button", {
         type: "button",
@@ -822,16 +898,26 @@ window.__ModuleLoader__.load({
       };
 
       const place = useCallback(() => {
-        const rect = seatRef.current?.getBoundingClientRect();
-        if (!rect) return;
-        const width = Math.min(520, window.innerWidth - 24);
-        const left = Math.max(12, Math.min(rect.right - width, window.innerWidth - width - 12));
-        setAnchor({
-          left,
-          bottom: Math.max(12, window.innerHeight - rect.top + 8),
-          width,
-          maxHeight: Math.max(240, Math.min(window.innerHeight * 0.72, rect.top - 24)),
+        const seat = seatRef.current?.getBoundingClientRect();
+        if (!seat) return;
+        // The composer grows upward, so anchoring to the seat would cover the
+        // very draft the panel asks you to approve. Anchor to the top of the
+        // composer's own textarea instead and let the panel take what is left.
+        let top = seat.top;
+        // Composer may be a textarea or a contenteditable editor, depending on
+        // the DSH build; accept either as the top edge to sit above.
+        const fields = document.querySelectorAll('textarea, [contenteditable="true"], [role="textbox"]');
+        fields.forEach((field) => {
+          if (panelRef.current?.contains(field)) return;
+          const box = field.getBoundingClientRect();
+          if (box.width < 120 || box.height < 18) return;
+          if (box.top > seat.top - 4 || box.bottom < seat.top - 600) return;
+          top = Math.min(top, box.top);
         });
+        const width = Math.min(520, window.innerWidth - 24);
+        const left = Math.max(12, Math.min(seat.right - width, window.innerWidth - width - 12));
+        const maxHeight = Math.max(160, Math.min(window.innerHeight * 0.72, top - 16));
+        setAnchor({ left, bottom: Math.max(12, window.innerHeight - top + 8), width, maxHeight });
       }, []);
 
       const close = useCallback(() => {
@@ -877,8 +963,15 @@ window.__ModuleLoader__.load({
         window.addEventListener("scroll", onResize, true);
         const onKey = (event) => {
           if (event.key !== "Escape") return;
-          if (menu) { setMenu(null); return; }
-          if (review) { setReview(false); return; }
+          if (menu) { event.stopPropagation(); setMenu(null); return; }
+          if (review) { event.stopPropagation(); setReview(false); return; }
+          if (runningRef.current) {
+            // Stop the stream but keep the panel and the partial text.
+            event.stopPropagation();
+            abortRef.current?.abort();
+            return;
+          }
+          event.stopPropagation();
           close();
         };
         const onDown = (event) => {
@@ -886,6 +979,9 @@ window.__ModuleLoader__.load({
           if (!(target instanceof Node)) return;
           if (panelRef.current?.contains(target) || seatRef.current?.contains(target)) return;
           if (target instanceof Element && target.closest(".po-menu")) return;
+          // Clicking into the composer to edit the draft must not throw away a
+          // running rewrite or a pending diff review.
+          if (runningRef.current || review) return;
           close();
         };
         document.addEventListener("keydown", onKey);
@@ -918,6 +1014,8 @@ window.__ModuleLoader__.load({
       }, [open, view, review, catalog, mode, draft, templateId]);
 
       function recordEntry({ text, sourceText, template, elapsed, model, tokenUsage }) {
+        const latest = storeRef.current.entries[0];
+        if (latest && latest.input === clip(sourceText) && latest.output === clip(text)) return;
         const parent = mode === "iterate"
           ? storeRef.current.entries.find((entry) => entry.output === sourceText)
           : null;
@@ -1067,16 +1165,21 @@ window.__ModuleLoader__.load({
         setMenu(null);
       }
 
-      function confirmReplace() {
-        if (!result) return;
+      /** Every path that overwrites the composer leaves the same undo trail. */
+      function writeDraft(next) {
         const previous = draftRef.current;
-        inputActions?.setDraft?.(result);
+        inputActions?.setDraft?.(next);
         undoSeqRef.current += 1;
         const seq = undoSeqRef.current;
         setUndoText(previous);
         later(() => {
           if (undoSeqRef.current === seq) setUndoText("");
         }, UNDO_MS);
+      }
+
+      function confirmReplace() {
+        if (!result) return;
+        writeDraft(result);
         setFlash("done");
         later(() => setFlash(""), 1800);
         setVars(null);
@@ -1128,7 +1231,7 @@ window.__ModuleLoader__.load({
 
       function applyTemplated() {
         if (!vars || typeof vars.templated !== "string") return;
-        inputActions?.setDraft?.(vars.templated);
+        writeDraft(vars.templated);
         setFlash("done");
         later(() => setFlash(""), 1800);
         close();
@@ -1183,7 +1286,7 @@ window.__ModuleLoader__.load({
       }
 
       function restore(entry) {
-        inputActions?.setDraft?.(entry.output);
+        writeDraft(entry.output);
         setFlash("done");
         later(() => setFlash(""), 1800);
         close();
@@ -1354,7 +1457,7 @@ window.__ModuleLoader__.load({
             onClick: extract,
           }) : null,
         ),
-        h("pre", { className: "po-text" }, result, busy ? h("span", { className: "po-caret" }) : null),
+        h("div", { className: "po-rich" }, renderMarkup(result, "result"), busy ? h("span", { className: "po-caret" }) : null),
         vars ? h("div", { className: "po-vars" },
           h("div", { className: "po-cardhead", style: { borderTop: "1px solid var(--dsw-alias-border-l1)" } },
             h("div", { className: "po-cardtitle" }, h("span", null, T("可参数化片段")),
@@ -1434,7 +1537,7 @@ window.__ModuleLoader__.load({
           ),
           expanded ? h("div", { className: "po-hbody" },
             h("div", { className: "po-hblock" }, h("label", null, T("原稿")), h("p", null, entry.input)),
-            h("div", { className: "po-hblock" }, h("label", null, T("优化结果")), h("p", null, entry.output)),
+            h("div", { className: "po-hblock" }, h("label", null, T("优化结果")), h("div", { className: "po-rich", style: { padding: 0 } }, renderMarkup(entry.output, `h-${entry.id}`))),
             h("div", { className: "po-hactions" },
               h(Button, { variant: "ghost", onClick: () => copy(entry.output, entry.id) }, T(copied === entry.id ? "已复制" : "复制")),
               h(Button, { variant: "ghost", onClick: () => restore(entry) }, T("写回")),
@@ -1499,7 +1602,7 @@ window.__ModuleLoader__.load({
               h("span", null, `${T("优化结果")} v${Math.max(1, chain.findIndex((row) => row.id === cmpEntry.id) + 1)}`),
               h("span", null, `${countChars(cmpEntry.output)} ${T("字")}`),
             ),
-            h("pre", { className: "po-text" }, cmpEntry.output),
+            h("div", { className: "po-rich" }, renderMarkup(cmpEntry.output, "cmp")),
           ),
         ),
         (() => {
@@ -1542,7 +1645,7 @@ window.__ModuleLoader__.load({
           h("span", null, parsePin(pin) ? modelLabel(panelCatalog, pin) : T("跟随当前模型")),
           h(Icon, { name: "chevronDown", size: 11 }),
         ),
-        h("span", { className: "po-meta" }, templateRow ? pick(templateRow, "useWhen", english) : ""),
+        h("span", { className: "po-meta", title: templateRow ? pick(templateRow, "useWhen", english) : "" }, templateRow ? pick(templateRow, "useWhen", english) : ""),
         h("div", { className: "po-spacer" }),
         busy
           ? h(Button, { onClick: () => abortRef.current?.abort(), icon: "stop" }, T("停止"))
@@ -1709,7 +1812,7 @@ window.__ModuleLoader__.load({
         menuNode,
         undoText && draft === result
           ? createPortal(h("div", { className: "po-toast", role: "status" },
-            h("span", null, T("替换草稿")),
+            h("span", null, T("已替换草稿 · 9 秒内可撤销")),
             h("button", { type: "button", onClick: undo }, T("撤销")),
           ), document.body)
           : null,
