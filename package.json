@@ -4,6 +4,7 @@
   "description": "Prompt optimizer for DeepSeek Harness: rewrite a rough draft into a precise prompt, review a line diff, undo within nine seconds, with version history, a template library and a bilingual UI.",
   "type": "module",
   "license": "MIT",
+  "icon": "assets/icon-180.png",
   "main": "./src/index.js",
   "exports": {
     ".": "./src/index.js",
@@ -57,6 +58,8 @@
   "files": [
     "src",
     "cordis.patch.yml",
+    "assets/icon-180.png",
+    "screenshots.json",
     "README.md",
     "README_en.md",
     "LICENSE",
