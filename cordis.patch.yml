@@ -1,0 +1,4 @@
+# dsh bundle patch: adds the prompt-optimize seat to the profile's layer stack.
+- insert:
+    - id: prompt-optimize
+      name: "@minus77/dsh-prompt-optimize"

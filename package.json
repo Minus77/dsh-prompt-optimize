@@ -1,0 +1,87 @@
+{
+  "name": "@minus77/dsh-prompt-optimize",
+  "version": "0.1.0",
+  "description": "Prompt optimizer for DeepSeek Harness: rewrite a rough draft into a precise prompt, review a line diff, undo within nine seconds, with version history, a template library and a bilingual UI.",
+  "type": "module",
+  "license": "MIT",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./client": "./src/web.js",
+    "./catalog": "./src/catalog.js",
+    "./placeholders": "./src/placeholders.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-api-session-controller"
+      ]
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "engines": {
+    "dsh": ">=0.1.7-0",
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "*",
+    "@deepseek-ai/dsh-client-runtime": "*",
+    "@deepseek-ai/dsh-llm": ">=0.1.7-0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/cordis": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-client-runtime": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-llm": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "files": [
+    "src",
+    "cordis.patch.yml",
+    "README.md",
+    "README_en.md",
+    "LICENSE",
+    "docs/TEMPLATES.md",
+    "docs/TEMPLATES.en.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Minus77/dsh-prompt-optimize.git"
+  },
+  "homepage": "https://github.com/Minus77/dsh-prompt-optimize#readme",
+  "bugs": {
+    "url": "https://github.com/Minus77/dsh-prompt-optimize/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "prompt-optimizer",
+    "prompt-engineering"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
