@@ -1,5 +1,7 @@
 # 提示词优化器 · Prompt Optimizer
 
+[![npm](https://img.shields.io/npm/v/@minus77/dsh-prompt-optimize?color=3a42d6)](https://www.npmjs.com/package/@minus77/dsh-prompt-optimize) [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+
 一个 DeepSeek Harness 插件：把输入框里的草稿改写成可直接使用的提示词。替换前先看逐行 diff，替换后 9 秒内可撤销；带本地历史、版本对比和一套可复用的模板。
 
 [English](./README_en.md) · [模板说明](./docs/TEMPLATES.md)
@@ -36,21 +38,27 @@
 
 要求：DeepSeek Harness `>= 0.1.7-0`，Node.js `>= 18`。
 
-### 1. 取得插件
+### 1. 从 npm 安装（推荐）
+
+```bash
+dsh plugin --profile web add @minus77/dsh-prompt-optimize
+```
+
+装的是 registry 上已发布的版本（[npm](https://www.npmjs.com/package/@minus77/dsh-prompt-optimize) / [Release](https://github.com/Minus77/dsh-prompt-optimize/releases)），装完直接跳到第 2 步。
+
+<details>
+<summary>离线安装：从源码或 Release 里的 tgz</summary>
 
 ```bash
 git clone https://github.com/Minus77/dsh-prompt-optimize.git
 cd dsh-prompt-optimize
 npm pack          # 生成 minus77-dsh-prompt-optimize-0.1.0.tgz
-```
-
-### 2. 装进某个 profile
-
-```bash
 dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.1.0.tgz
 ```
 
-### 3. 让 profile 加载它
+</details>
+
+### 2. 让 profile 加载它
 
 编辑 `~/.dsh/profiles/<profile>/package.json`，把包名追加到 `dsh.profile.bundles`：
 
@@ -70,7 +78,7 @@ dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.1.0.tgz
 
 重启该 profile 的 Harness（`dsh --profile <profile>`），输入框右侧就会出现“提示词优化”。
 
-> 用 `plugin_manager` 的 `install_bundle`（目标是本仓库目录）安装时，上面第 2、3 步会一次完成，无需手改 JSON。
+> 用 `plugin_manager` 的 `install_bundle` 安装时，第 1、2 步会一次完成，无需手改 JSON。
 
 ### 本地开发
 

@@ -1,5 +1,7 @@
 # Prompt Optimizer
 
+[![npm](https://img.shields.io/npm/v/@minus77/dsh-prompt-optimize?color=3a42d6)](https://www.npmjs.com/package/@minus77/dsh-prompt-optimize) [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+
 A DeepSeek Harness plugin that turns the rough draft in your composer into a prompt you can actually use. You review a line-by-line diff before it replaces anything, you can undo for nine seconds afterwards, and it keeps a local history with version compare and a library of reusable templates.
 
 [中文](./README.md) · [Templates](./docs/TEMPLATES.en.md)
@@ -36,21 +38,27 @@ Most prompts that "don't work" are not a model problem — they are a draft prob
 
 Requires DeepSeek Harness `>= 0.1.7-0` and Node.js `>= 18`.
 
-### 1. Get the package
+### 1. Install from npm (recommended)
+
+```bash
+dsh plugin --profile web add @minus77/dsh-prompt-optimize
+```
+
+That pulls the published package ([npm](https://www.npmjs.com/package/@minus77/dsh-prompt-optimize) / [release](https://github.com/Minus77/dsh-prompt-optimize/releases)); then continue with step 2.
+
+<details>
+<summary>Offline install: from source or the release tarball</summary>
 
 ```bash
 git clone https://github.com/Minus77/dsh-prompt-optimize.git
 cd dsh-prompt-optimize
 npm pack          # produces minus77-dsh-prompt-optimize-0.1.0.tgz
-```
-
-### 2. Install into a profile
-
-```bash
 dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.1.0.tgz
 ```
 
-### 3. Load it in that profile
+</details>
+
+### 2. Load it in that profile
 
 Edit `~/.dsh/profiles/<profile>/package.json` and append the package to `dsh.profile.bundles`:
 
