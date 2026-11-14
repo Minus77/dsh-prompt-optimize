@@ -14,7 +14,7 @@ function material(label, value) {
 }
 
 /** The shared output contract every rewrite template ends with. */
-const OUTPUT_ONLY = "只输出改写后的提示词正文。不要解释你的思路，不要加「以下是」之类的前后缀，不要用代码围栏包住整段结果。";
+const OUTPUT_ONLY = "用素材本身的语言输出（英文素材就用英文，中文素材就用中文，不要翻译）；只输出改写后的提示词正文。不要解释你的思路，不要加「以下是」之类的前后缀，不要用代码围栏包住整段结果。";
 
 /** The shared evidence rule: never invent facts the draft does not contain. */
 const NO_INVENTION = "只使用素材里已有的信息和你能够合理推断的常识；推断不出的关键信息写成「待确认：…」保留在提示词里，不要编造事实、数字或专有名词。";

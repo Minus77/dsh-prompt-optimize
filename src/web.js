@@ -121,7 +121,7 @@ window.__ModuleLoader__.load({
 .po-cols{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--dsw-alias-border-l1);border-top:1px solid var(--dsw-alias-border-l1)}
 .po-col{background:var(--dsw-alias-bg-layer-1);min-width:0}
 .po-colhead{display:flex;align-items:center;justify-content:space-between;padding:6px 9px;font-size:11px;font-weight:600;color:var(--dsw-alias-label-secondary);border-bottom:1px solid var(--dsw-alias-border-l1)}
-.po-col .po-text{max-height:230px;overflow:auto;padding:8px 9px;font-size:12px}
+.po-col .po-text{max-height:min(46vh,420px);overflow:auto;padding:8px 9px;font-size:12px}
 .po-history{display:flex;flex-direction:column;gap:6px}
 .po-hrow{border:1px solid var(--dsw-alias-border-l1);border-radius:9px;overflow:hidden}
 .po-hhead{display:flex;align-items:center;gap:7px;width:100%;box-sizing:border-box;padding:8px 9px;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
@@ -1811,7 +1811,11 @@ window.__ModuleLoader__.load({
         panel,
         menuNode,
         undoText && draft === result
-          ? createPortal(h("div", { className: "po-toast", role: "status" },
+          ? createPortal(h("div", {
+            className: "po-toast",
+            role: "status",
+            style: anchor ? { bottom: Math.max(16, anchor.bottom + 10) } : undefined,
+          },
             h("span", null, T("已替换草稿 · 9 秒内可撤销")),
             h("button", { type: "button", onClick: undo }, T("撤销")),
           ), document.body)
