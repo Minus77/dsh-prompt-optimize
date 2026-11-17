@@ -118,6 +118,128 @@ const BUILDERS = {
     user: (ctx) => material("草稿", ctx.originalPrompt),
   },
 
+  "user-code-review": {
+    system: [
+      "你在把一句代码审阅的草稿改写成一次具体、可执行的审阅请求。",
+      "输出要求：",
+      "1. 写清审阅范围：哪些文件、函数或提交，以及这次改动的目的；",
+      "2. 关注点按优先级排序，例如正确性、安全、性能、可维护性、可读性，不要平均用力；",
+      "3. 规定输出格式：按严重度分组，每条包含位置、问题、影响、建议改法；",
+      "4. 写明不做什么，例如不重写整个文件、不评论个人风格偏好、不猜未提供的上下文；",
+      "5. 要求结论有依据：引用具体行、调用链或行为差异。",
+      NO_INVENTION,
+      OUTPUT_ONLY,
+    ].join("\n"),
+    user: (ctx) => material("草稿", ctx.originalPrompt),
+  },
+
+  "user-code-gen": {
+    system: [
+      "你在把一句编码需求的草稿改写成可以直接交给智能体实现的工程任务说明。",
+      "输出要求：",
+      "1. 目标与验收：改完后什么行为算通过；",
+      "2. 技术约束：语言、版本、依赖限制、不能引入的库、必须复用的模块；",
+      "3. 接口契约：函数签名、输入输出、错误类型；",
+      "4. 边界与失败处理：空值、超时、并发、权限；",
+      "5. 交付形式：改哪些文件、给关键代码、说明如何验证；",
+      "6. 信息不足的地方写「待确认：…」，不要替用户决定架构。",
+      "不要直接写出实现代码，你要产出的是任务说明。",
+      NO_INVENTION,
+      OUTPUT_ONLY,
+    ].join("\n"),
+    user: (ctx) => material("草稿", ctx.originalPrompt),
+  },
+
+  "user-sql": {
+    system: [
+      "你在把一句查询需求的草稿改写成清晰的 SQL 任务说明。",
+      "输出要求：",
+      "1. 涉及的库、表、字段，未知的写「待确认：…」；",
+      "2. 口径：时间范围、去重规则、NULL 与空串的处理、金额与单位的定义；",
+      "3. 结果要求：列名、排序、分页或聚合粒度；",
+      "4. 性能约束：大表扫描、可用的索引、是否允许临时表；",
+      "5. 权限与副作用：只读还是写入，是否需要事务。",
+      "要求最终答案给出 SQL，并单独列出所做的假设。",
+      NO_INVENTION,
+      OUTPUT_ONLY,
+    ].join("\n"),
+    user: (ctx) => material("草稿", ctx.originalPrompt),
+  },
+
+  "user-extract": {
+    system: [
+      "你在把一句抽取需求的草稿改写成结构化抽取任务。",
+      "输出要求：",
+      "1. 说明输入是什么形态：文本、表格、网页还是对话；",
+      "2. 给出目标 schema：字段名、类型、是否必填、枚举取值；",
+      "3. 规定缺失与冲突的处理：找不到填 null，不猜测；同一字段多个值时怎么选；",
+      "4. 要求只输出严格 JSON，不要解释，不要用代码围栏；",
+      "5. 给一个简短的输入输出示例，示例只用草稿里出现的信息。",
+      NO_INVENTION,
+      OUTPUT_ONLY,
+    ].join("\n"),
+    user: (ctx) => material("草稿", ctx.originalPrompt),
+  },
+
+  "user-test-cases": {
+    system: [
+      "你在把一句测试需求的草稿改写成测试设计任务。",
+      "输出要求：",
+      "1. 写清被测对象、范围与主要风险；",
+      "2. 用例结构统一为：编号、前置条件、步骤、期望结果；",
+      "3. 覆盖正常路径、边界值、异常输入与权限场景，各至少一条；",
+      "4. 标出优先级，并说明哪几条适合先自动化；",
+      "5. 用表格输出，不要写自动化脚本，除非草稿明确要求。",
+      NO_INVENTION,
+      OUTPUT_ONLY,
+    ].join("\n"),
+    user: (ctx) => material("草稿", ctx.originalPrompt),
+  },
+
+  "user-translate": {
+    system: [
+      "你在把一句翻译需求的草稿改写成一次可交付的翻译任务说明。",
+      "输出要求：",
+      "1. 源语言与目标语言，目标地区或文体（例如「面向日本客户的商务邮件」）；",
+      "2. 受众与语气，给出可模仿的特征而不是「自然」这类空词；",
+      "3. 术语表：必须保留原文的词、品牌名、字段名、占位符；",
+      "4. 格式要求：保留 Markdown 结构、编号、变量与代码片段；",
+      "5. 明确不增删内容、不改写事实，只输出译文。",
+      OUTPUT_ONLY,
+    ].join("\n"),
+    user: (ctx) => material("草稿", ctx.originalPrompt),
+  },
+
+  "user-polish": {
+    system: [
+      "你在把一句润色需求的草稿改写成明确的写作修订任务。",
+      "输出要求：",
+      "1. 文体、读者与使用场景；",
+      "2. 允许改动的层级：只改词句、可以调整段落，还是可以重组结构；",
+      "3. 必须保留的内容：事实、数字、引用、专有名词与结论；",
+      "4. 禁止事项：不扩写、不新增观点、不改变立场；",
+      "5. 输出改后全文，并在末尾用三条以内的要点说明主要改动。",
+      NO_INVENTION,
+      OUTPUT_ONLY,
+    ].join("\n"),
+    user: (ctx) => material("草稿", ctx.originalPrompt),
+  },
+
+  "user-rag": {
+    system: [
+      "你在把一句问答需求的草稿改写成「基于给定资料回答」的任务说明。",
+      "输出要求：",
+      "1. 写清资料范围：允许使用哪些文档，是否可以使用资料外的常识；",
+      "2. 回答要求引用原文片段，并标出来源；",
+      "3. 资料没有覆盖时直接说「资料未覆盖」，不要编造；",
+      "4. 资料之间冲突时，列出冲突点与各自出处，再给判断；",
+      "5. 输出结构：结论、依据、未覆盖的问题。",
+      NO_INVENTION,
+      OUTPUT_ONLY,
+    ].join("\n"),
+    user: (ctx) => material("草稿", ctx.originalPrompt),
+  },
+
   "iterate-tweak": {
     system: [
       "你是提示词编辑。你会收到「当前提示词」和「修改意见」，输出修订后的完整提示词。",
@@ -174,5 +296,34 @@ export function buildExtractionPrompt({ promptContent, existingNames = [] }) {
     '{"variables":[{"name":"变量名","value":"原文片段","anchor":{"text":"原文片段","occurrence":1},"reason":"为什么值得参数化"}],"summary":"一句话说明"}',
   ].join("\n");
   const user = material("待模板化的提示词", promptContent);
+  return { system, user };
+}
+
+/**
+ * Build the read-only checkup request.
+ *
+ * The model is asked for one strict JSON object; `normalizeReview` in
+ * `review.js` is what makes the answer safe to render and to apply, so this
+ * prompt only has to be precise about the requested shape.
+ *
+ * @param {{ promptContent: string }} input
+ */
+export function buildReviewPrompt({ promptContent }) {
+  const system = [
+    "你是提示词审阅员。用户给你一段准备发给智能体的提示词，你要指出它具体哪里会导致执行偏差。",
+    "只做诊断，不要重写整段提示词。",
+    "六个维度各打 0–100 分：clarity（目标是否清楚）、context（材料与背景是否够）、format（输出格式是否明确）、constraints（约束与边界是否写清）、examples（是否有可对照的示例）、robustness（异常与信息缺失时怎么办）。",
+    "问题要求：",
+    "1. 最多 8 条，按严重度排序，最严重的在前；",
+    "2. quote 必须是原文里逐字连续的一段（10–80 字），不能改写、不能加省略号、不能跨段拼接；",
+    "3. replacement 是能直接替换 quote 的修订文本，只改这一处，长度与原片段相近；",
+    "4. why 用一句话说明这处会导致什么偏差；",
+    "5. 没有问题时返回空数组，不要为了凑数硬找。",
+    "score 是整段提示词的综合分，应与各维度一致，不要虚高。",
+    "title、why、summary 用提示词本身的语言写。",
+    "只输出严格 JSON，不要解释，不要用代码围栏：",
+    '{"score":0,"dims":{"clarity":0,"context":0,"format":0,"constraints":0,"examples":0,"robustness":0},"issues":[{"severity":"high|medium|low","title":"…","quote":"…","replacement":"…","why":"…"}],"summary":"…"}',
+  ].join("\n");
+  const user = material("待审阅的提示词", promptContent);
   return { system, user };
 }

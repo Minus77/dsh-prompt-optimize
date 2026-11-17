@@ -20,9 +20,19 @@ window.__ModuleLoader__.load({
     const MODELS_ROUTE = "/prompt-optimize/models";
     const OPTIMIZE_ROUTE = "/prompt-optimize/optimize";
     const VARIABLES_ROUTE = "/prompt-optimize/variables";
+    const REVIEW_ROUTE = "/prompt-optimize/review";
     const PIN_KEY = "dsh.prompt-optimize/model";
     const HISTORY_KEY = "dsh.prompt-optimize/history";
     const HISTORY_MAX = 50;
+    /** Checkup dimensions in display order: [key, label]. */
+    const REVIEW_DIMS = [
+      ["clarity", "清晰度"],
+      ["context", "上下文"],
+      ["format", "输出格式"],
+      ["constraints", "约束"],
+      ["examples", "示例"],
+      ["robustness", "鲁棒性"],
+    ];
     const CLIP = 4000;
     const UNDO_MS = 9000;
 
@@ -143,6 +153,33 @@ window.__ModuleLoader__.load({
 .po-toast{position:fixed;z-index:1400;left:50%;bottom:26px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:8px 10px 8px 14px;border-radius:10px;background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l2);box-shadow:0 10px 30px rgba(0,0,0,.16);font-size:12px;color:var(--dsw-alias-label-primary);animation:po-in .14s ease-out}
 .po-toast button{height:24px;padding:0 9px;border:0;border-radius:6px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;cursor:pointer}
 .po-toast button:hover{background:var(--dsw-alias-interactive-bg-active)}
+.po-vtabs{display:inline-flex;align-items:center;gap:2px;padding:2px;border-radius:8px;background:var(--dsw-alias-interactive-bg-hover);flex:none}
+.po-vtab{height:22px;padding:0 8px;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:11px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.po-vtab[aria-selected="true"]{background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);box-shadow:0 1px 2px rgba(0,0,0,.10)}
+.po-vtab b{font-weight:700}
+.po-check{padding:0 0 2px}
+.po-scoreline{display:flex;align-items:baseline;gap:6px;padding:2px 10px 0}
+.po-score{font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.1;color:var(--dsw-alias-label-primary)}
+.po-score small{font-size:11px;font-weight:500;color:var(--dsw-alias-label-tertiary);margin-left:2px}
+.po-dims{display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;padding:8px 10px}
+.po-dim{display:flex;flex-direction:column;gap:3px;min-width:0}
+.po-dimhead{display:flex;align-items:center;justify-content:space-between;font-size:10.5px;color:var(--dsw-alias-label-secondary);gap:6px}
+.po-dimhead span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.po-bar{height:4px;border-radius:999px;background:var(--dsw-alias-interactive-bg-hover);overflow:hidden}
+.po-bar i{display:block;height:100%;border-radius:999px;background:var(--dsw-alias-brand-primary)}
+.po-bar[data-tone="low"] i{background:var(--dsw-alias-state-error)}
+.po-bar[data-tone="mid"] i{background:var(--dsw-alias-state-business-primary)}
+.po-issues{display:flex;flex-direction:column;border-top:1px solid var(--dsw-alias-border-l1)}
+.po-issue{padding:8px 10px;display:flex;flex-direction:column;gap:4px;border-bottom:1px solid var(--dsw-alias-border-l1)}
+.po-issue:last-child{border-bottom:0}
+.po-issuehead{display:flex;align-items:center;gap:6px;min-width:0}
+.po-issuehead strong{font-size:12px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.po-sev{flex:none;font-size:10px;font-weight:600;padding:1px 6px;border-radius:999px;border:1px solid var(--dsw-alias-border-l2);color:var(--dsw-alias-label-secondary)}
+.po-sev[data-sev="high"]{color:var(--dsw-alias-state-error);border-color:color-mix(in srgb,var(--dsw-alias-state-error) 40%,transparent);background:color-mix(in srgb,var(--dsw-alias-state-error) 8%,transparent)}
+.po-sev[data-sev="medium"]{color:var(--dsw-alias-state-business-primary);border-color:color-mix(in srgb,var(--dsw-alias-state-business-primary) 40%,transparent);background:color-mix(in srgb,var(--dsw-alias-state-business-primary) 8%,transparent)}
+.po-quote{margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;line-height:1.5;color:var(--dsw-alias-label-secondary);background:var(--dsw-alias-interactive-bg-hover);border-radius:6px;padding:4px 6px;white-space:pre-wrap;word-break:break-word;max-height:86px;overflow:auto}
+.po-fix{margin:0;font-size:11.5px;line-height:1.5;color:var(--dsw-alias-label-primary)}
+.po-fix small{display:block;font-size:10.5px;color:var(--dsw-alias-label-tertiary);margin-top:2px}
 @media (prefers-reduced-motion:reduce){.po-panel,.po-menu,.po-toast{animation:none}.po-dot,.po-caret{animation:none}}
 `;
 
@@ -296,6 +333,33 @@ window.__ModuleLoader__.load({
       "步骤": "steps",
       "边界": "limits",
       "验收": "acceptance",
+      "体检": "Checkup",
+      "重新体检": "Re-check",
+      "体检中…": "Checking…",
+      "提示词体检": "Prompt checkup",
+      "体检失败": "Checkup failed",
+      "综合分": "Overall",
+      "清晰度": "Clarity",
+      "上下文": "Context",
+      "输出格式": "Format",
+      "约束": "Constraints",
+      "示例": "Examples",
+      "鲁棒性": "Robustness",
+      "高": "High",
+      "中": "Medium",
+      "低": "Low",
+      "未发现问题": "No issues found",
+      "这版已经没什么可挑的。": "Nothing worth flagging in this version.",
+      "条建议，可直接替换": "fixes, applied in place",
+      "应用": "Apply",
+      "已应用": "Applied",
+      "位置已变，无法直接套用": "The quote moved, so this fix cannot be applied directly",
+      "体检只读，不改动草稿": "The checkup is read-only",
+      "再来一版": "Another version",
+      "上一版": "Previous",
+      "最新": "Latest",
+      "两版对比": "Two versions",
+      "本机分析": "local analysis",
     };
 
     function detectEnglish() {
@@ -661,6 +725,17 @@ window.__ModuleLoader__.load({
       return response.json();
     }
 
+    async function fetchReview(body, signal) {
+      const response = await fetch(REVIEW_ROUTE, {
+        method: "POST",
+        headers: { "content-type": "application/json", accept: "application/json" },
+        body: JSON.stringify(body),
+        signal,
+      });
+      if (!response.ok) throw new Error(await readError(response));
+      return response.json();
+    }
+
     /* ------------------------------------------------------------------ *
      * Component
      * ------------------------------------------------------------------ */
@@ -863,11 +938,16 @@ window.__ModuleLoader__.load({
       const [usedSource, setUsedSource] = useState("");
       const [usedTemplateId, setUsedTemplateId] = useState("");
       const [clearArmed, setClearArmed] = useState(false);
+      const [alt, setAlt] = useState(null);
+      const [check, setCheck] = useState(null);
+      const [checking, setChecking] = useState(false);
+      const [checkError, setCheckError] = useState("");
 
       const seatRef = useRef(null);
       const panelRef = useRef(null);
       const abortRef = useRef(null);
       const extractRef = useRef(null);
+      const checkRef = useRef(null);
       const timers = useRef(new Set());
       const autoSigRef = useRef("");
       const lastSigRef = useRef("");
@@ -923,6 +1003,8 @@ window.__ModuleLoader__.load({
       const close = useCallback(() => {
         abortRef.current?.abort();
         abortRef.current = null;
+        checkRef.current?.abort();
+        checkRef.current = null;
         setOpen(false);
         setMenu(null);
         setReview(false);
@@ -998,6 +1080,7 @@ window.__ModuleLoader__.load({
         timers.current.forEach((id) => window.clearTimeout(id));
         abortRef.current?.abort();
         extractRef.current?.abort();
+        checkRef.current?.abort();
       }, []);
 
       useEffect(() => {
@@ -1085,10 +1168,16 @@ window.__ModuleLoader__.load({
         abortRef.current = controller;
         runningRef.current = true;
         carryRef.current = "";
+        const previous = resultRef.current;
+        if (previous.trim().length > 0) {
+          setAlt({ text: previous, model: modelUsed, usage, elapsedMs });
+        }
         setStatus("running");
         setError("");
         setResult("");
         setVars(null);
+        setCheck(null);
+        setCheckError("");
         setUsage(null);
         setElapsedMs(0);
         setReview(false);
@@ -1227,6 +1316,55 @@ window.__ModuleLoader__.load({
           if (extractRef.current === controller) extractRef.current = null;
           setExtracting(false);
         }
+      }
+
+      async function runCheck() {
+        if (!result || checking || busy) return;
+        checkRef.current?.abort();
+        const controller = new AbortController();
+        checkRef.current = controller;
+        setChecking(true);
+        setCheckError("");
+        setCheck(null);
+        try {
+          const payload = await fetchReview({
+            promptContent: result,
+            ...(parsePin(pin) ?? {}),
+            ...(sessionId ? { sessionId } : {}),
+          }, controller.signal);
+          setCheck(payload);
+        } catch (failure) {
+          if (!controller.signal.aborted) {
+            setCheckError(failure instanceof Error ? failure.message : String(failure));
+          }
+        } finally {
+          if (checkRef.current === controller) checkRef.current = null;
+          setChecking(false);
+        }
+      }
+
+      /** Replace one quoted span in place; the rest of the result stays byte-identical. */
+      function applyIssue(issue) {
+        if (!issue || typeof issue.quote !== "string" || typeof issue.replacement !== "string") return;
+        const at = result.indexOf(issue.quote);
+        if (at < 0) return;
+        const next = result.slice(0, at) + issue.replacement + result.slice(at + issue.quote.length);
+        setResult(next);
+        setCheck((current) => (current
+          ? { ...current, issues: current.issues.filter((row) => row.quote !== issue.quote) }
+          : current));
+      }
+
+      function swapVariant() {
+        if (!alt) return;
+        const current = { text: result, model: modelUsed, usage, elapsedMs };
+        setResult(alt.text);
+        setModelUsed(alt.model ?? "");
+        setUsage(alt.usage ?? null);
+        setElapsedMs(alt.elapsedMs ?? 0);
+        setAlt(current);
+        setCheck(null);
+        setCheckError("");
       }
 
       function applyTemplated() {
@@ -1432,6 +1570,12 @@ window.__ModuleLoader__.load({
           h("div", { className: "po-cardtitle" },
             h("span", null, T(busy ? "生成中" : "优化结果")),
           ),
+          result && alt ? h("button", {
+            type: "button",
+            className: "po-vtab",
+            title: T("换一版"),
+            onClick: swapVariant,
+          }, h(Icon, { name: "refresh", size: 11 }), h("span", null, `${T("另一版")} ${countChars(alt.text)}`)) : null,
           result && usedSource && usedSource !== sourceNow
             ? h("span", { className: "po-chip", "data-tone": "warn" }, T("草稿已更新"))
             : null,
@@ -1445,6 +1589,12 @@ window.__ModuleLoader__.load({
             result ? `${countChars(result)} ${T("字")}` : "",
             usageLabel(usage),
           ].filter(Boolean).join(" · ")),
+          result ? h(IconButton, {
+            name: "check",
+            label: T(checking ? "体检中…" : check ? "重新体检" : "体检"),
+            disabled: busy || checking,
+            onClick: runCheck,
+          }) : null,
           result ? h(IconButton, {
             name: copied === "result" ? "check" : "copy",
             label: T(copied === "result" ? "已复制" : "复制"),
@@ -1480,6 +1630,66 @@ window.__ModuleLoader__.load({
         ) : null,
       ) : null;
 
+      const dimTone = (value) => (value === null || value === undefined ? undefined : value < 60 ? "low" : value < 80 ? "mid" : "ok");
+
+      const checkCard = view === "run" && (check || checking || checkError) ? h("div", { className: "po-card" },
+        h("div", { className: "po-cardhead" },
+          h("div", { className: "po-cardtitle" }, h(Icon, { name: "check", size: 13 }), h("span", null, T("提示词体检"))),
+          check ? h("span", { className: "po-chip" }, `${check.score} / 100`) : null,
+          checking ? h("span", { className: "po-chip" }, T("体检中…")) : null,
+          h("div", { className: "po-spacer" }),
+          check?.model ? h("span", { className: "po-meta" }, check.model.split("/").slice(1).join("/") || check.model) : null,
+          check && !checking ? h(IconButton, { name: "refresh", label: T("重新体检"), onClick: runCheck }) : null,
+        ),
+        checking
+          ? h("div", { className: "po-empty", style: { padding: "14px 12px" } },
+            h("span", { className: "po-dot" }),
+            h("p", null, T("体检只读，不改动草稿")))
+          : null,
+        checkError
+          ? h("p", { className: "po-note", style: { padding: "0 10px 10px", color: "var(--dsw-alias-state-error)" } },
+            `${T("体检失败")}：${checkError}`)
+          : null,
+        check && !checking ? h("div", { className: "po-check" },
+          h("div", { className: "po-scoreline" },
+            h("div", { className: "po-score" }, String(check.score), h("small", null, "/100")),
+            h("p", { className: "po-note", style: { flex: 1, minWidth: 0 } }, check.summary || ""),
+          ),
+          h("div", { className: "po-dims" }, REVIEW_DIMS.map(([key, label]) => {
+            const value = check.dims?.[key];
+            return h("div", { key, className: "po-dim" },
+              h("div", { className: "po-dimhead" },
+                h("span", null, T(label)),
+                h("span", null, value === null || value === undefined ? "—" : String(value)),
+              ),
+              h("div", { className: "po-bar", "data-tone": dimTone(value) },
+                h("i", { style: { width: `${value ?? 0}%` } })),
+            );
+          })),
+          check.issues.length > 0
+            ? h("div", { className: "po-issues" }, check.issues.map((issue) => {
+              const present = result.includes(issue.quote);
+              return h("div", { key: issue.quote, className: "po-issue" },
+                h("div", { className: "po-issuehead" },
+                  h("span", { className: "po-sev", "data-sev": issue.severity },
+                    T(issue.severity === "high" ? "高" : issue.severity === "low" ? "低" : "中")),
+                  h("strong", { title: issue.title }, issue.title || issue.why || ""),
+                  h(Button, {
+                    variant: "ghost",
+                    disabled: !present,
+                    title: present ? T("应用") : T("位置已变，无法直接套用"),
+                    onClick: () => applyIssue(issue),
+                  }, T("应用")),
+                ),
+                h("pre", { className: "po-quote" }, issue.quote),
+                h("p", { className: "po-fix" }, issue.replacement, issue.why ? h("small", null, issue.why) : null),
+              );
+            }))
+            : h("p", { className: "po-note", style: { padding: "2px 10px 10px" } },
+              h("strong", null, T("未发现问题")), " · ", T("这版已经没什么可挑的。")),
+        ) : null,
+      ) : null;
+
       const sourceCard = view === "run" && (result || busy) && sourceNow.trim() ? h("div", { className: "po-card" },
         h("button", {
           type: "button",
@@ -1508,6 +1718,7 @@ window.__ModuleLoader__.load({
         consentCard,
         iterateField,
         resultCard,
+        checkCard,
         sourceCard,
         emptyState,
       );
@@ -1661,6 +1872,7 @@ window.__ModuleLoader__.load({
               )
               : result
                 ? h("div", { style: { display: "flex", gap: 6 } },
+                  h(Button, { variant: "ghost", onClick: run, icon: "refresh", title: T("再来一版") }, T("再来一版")),
                   h(Button, { variant: "ghost", onClick: send, icon: "send" }, T("发送")),
                   h(Button, { variant: "primary", onClick: accept, icon: "arrowRight" }, T("替换草稿")),
                 )

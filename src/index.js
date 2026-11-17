@@ -1,26 +1,31 @@
 /**
  * Host half of the prompt optimizer.
  *
- * Three exact routes:
+ * Four exact routes:
  *   GET  /prompt-optimize/models    catalog for the picker
  *   POST /prompt-optimize/optimize  one rewrite, streamed as NDJSON
  *   POST /prompt-optimize/variables extract reusable placeholders, JSON
+ *   POST /prompt-optimize/review    read-only checkup with applyable fixes, JSON
  */
 
 import { buildCatalog } from "./catalog.js";
-import { buildExtractionPrompt, buildPrompt } from "./prompts.js";
+import { buildExtractionPrompt, buildPrompt, buildReviewPrompt } from "./prompts.js";
 import { applyVariables, parseVariables } from "./placeholders.js";
+import { normalizeReview, parseReviewJson } from "./review.js";
 import { defaultTemplateFor, getTemplate, templateMatchesMode } from "./spec.js";
 
 export const MODELS_ROUTE = "/prompt-optimize/models";
 export const OPTIMIZE_ROUTE = "/prompt-optimize/optimize";
 export const VARIABLES_ROUTE = "/prompt-optimize/variables";
+export const REVIEW_ROUTE = "/prompt-optimize/review";
 
 const MAX_BODY_BYTES = 1024 * 1024;
 const MAX_TEXT_CHARS = 60_000;
 const MAX_FIELD_CHARS = 200;
 const MAX_VARIABLES = 5;
 const MAX_TOKENS = 16_384;
+/** A checkup is a small JSON object; a generous cap still bounds the cost. */
+const MAX_REVIEW_TOKENS = 4_096;
 
 /** Raised by request validation; the guard turns it into a JSON error. */
 class RequestError extends Error {
@@ -487,6 +492,76 @@ export function apply(ctx) {
       });
     }),
   }), `prompt-optimize: POST ${VARIABLES_ROUTE}`);
+
+  ctx.effect(() => ctx.webServer.register({
+    kind: "exact",
+    path: REVIEW_ROUTE,
+    handler: guard(`POST ${REVIEW_ROUTE}`, async (req, res) => {
+      if (rejected(req, res)) return;
+      if (req.method !== "POST") {
+        sendMethodNotAllowed(res, "POST");
+        return;
+      }
+      requireJson(req);
+      const body = await readJsonBody(req);
+      if (typeof body !== "object" || body === null || Array.isArray(body)) {
+        throw new RequestError(400, "invalid-body", "请求体必须是一个 JSON 对象。");
+      }
+      const promptContent = readText(body.promptContent, "promptContent", { required: true });
+
+      const route = optionalPin(body) ?? currentRoute(ctx);
+      if (!route) {
+        throw new RequestError(
+          503,
+          "no-model",
+          "没有可用的默认模型：请在设置里选择一个默认模型，或在面板里指定模型后重试。",
+        );
+      }
+
+      const { system, user } = buildReviewPrompt({ promptContent });
+      const controller = new AbortController();
+      const abort = () => controller.abort(new Error("client disconnected"));
+      req.on("aborted", abort);
+      res.on("close", abort);
+
+      const result = await consume(ctx.llm.stream({
+        provider: route.provider,
+        model: route.model,
+        system,
+        messages: [{ role: "user", content: [{ type: "text", text: user }] }],
+        maxTokens: MAX_REVIEW_TOKENS,
+        signal: controller.signal,
+        ...(typeof body.sessionId === "string" && body.sessionId.length > 0 && body.sessionId.length <= 200
+          ? { sessionId: body.sessionId }
+          : {}),
+      }), () => {});
+
+      if (controller.signal.aborted) throw new RequestError(499, "aborted", "体检被中止。");
+      const failure = finishFailure(result.finish);
+      if (failure) throw new RequestError(502, "model-failure", failure);
+
+      let review;
+      try {
+        review = normalizeReview(parseReviewJson(result.text), promptContent);
+      } catch (error) {
+        throw new RequestError(
+          502,
+          "invalid-review",
+          `模型返回的体检结果无法解析：${error instanceof Error ? error.message : String(error)}`,
+        );
+      }
+
+      sendJson(res, 200, {
+        ...review,
+        model: `${route.provider}/${route.model}`,
+        usage: result.usage === null ? undefined : {
+          inputTokens: result.usage.inputTokens,
+          outputTokens: result.usage.outputTokens,
+          ...(result.usage.totalTokens === undefined ? {} : { totalTokens: result.usage.totalTokens }),
+        },
+      });
+    }),
+  }), `prompt-optimize: POST ${REVIEW_ROUTE}`);
 }
 
 export const name = "prompt-optimize";
