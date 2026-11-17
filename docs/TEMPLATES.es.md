@@ -191,3 +191,5 @@ Solo cambian las frases relacionadas con el tono y esa lista; los títulos, la p
 | Casi contento, quieres un cambio pequeño | Incremental edit |
 
 Más plantillas no es mejor: el mismo borrador con plantillas distintas produce estructuras visiblemente distintas. Elige una por defecto y cambia solo cuando cambie el trabajo.
+
+Volver al [README principal](./../README_es.md).
