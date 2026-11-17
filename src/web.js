@@ -24,6 +24,8 @@ window.__ModuleLoader__.load({
     const PIN_KEY = "dsh.prompt-optimize/model";
     const HISTORY_KEY = "dsh.prompt-optimize/history";
     const HISTORY_MAX = 50;
+    const CUSTOM_KEY = "dsh.prompt-optimize/custom-templates";
+    const CUSTOM_CATEGORY = "自定义";
     /** Checkup dimensions in display order: [key, label]. */
     const REVIEW_DIMS = [
       ["clarity", "清晰度"],
@@ -360,6 +362,22 @@ window.__ModuleLoader__.load({
       "最新": "Latest",
       "两版对比": "Two versions",
       "本机分析": "local analysis",
+      "自定义": "Custom",
+      "新建自定义模板": "New custom template",
+      "写好要求，以后一键复用": "Write the instruction once, reuse it later",
+      "自定义模板": "Custom template",
+      "模板名称": "Template name",
+      "例如：客服口吻": "e.g. Support-agent tone",
+      "改写要求": "Rewrite instruction",
+      "例如：把语气改成客服口吻，结尾加一句道歉，不要超过 150 字。": "e.g. Use a support-agent tone, end with an apology, keep it under 150 words.",
+      "适用对象": "Applies to",
+      "保存": "Save",
+      "导入 JSON": "Import JSON",
+      "导出全部": "Export all",
+      "写一句改写要求再保存。": "Write an instruction before saving.",
+      "这个文件里没有可导入的模板。": "This file has no templates to import.",
+      "导入失败": "Import failed",
+      "自定义模板只保存在这台浏览器里，不会上传。": "Custom templates stay in this browser; nothing is uploaded.",
     };
 
     function detectEnglish() {
@@ -618,6 +636,63 @@ window.__ModuleLoader__.load({
       } catch {
         // A full or disabled storage must not break the panel.
       }
+    }
+
+    /* ------------------------------------------------------------------ *
+     * Custom templates (local to this browser)
+     * ------------------------------------------------------------------ */
+
+    function normalizeCustom(raw) {
+      if (!raw || typeof raw !== "object") return null;
+      const instruction = typeof raw.instruction === "string" ? raw.instruction.trim().slice(0, 2000) : "";
+      if (instruction.length === 0) return null;
+      const label = typeof raw.label === "string" && raw.label.trim().length > 0
+        ? raw.label.trim().slice(0, 60)
+        : instruction.slice(0, 24);
+      return {
+        id: typeof raw.id === "string" && raw.id.length > 0
+          ? raw.id
+          : `c-${Math.random().toString(36).slice(2, 10)}`,
+        label,
+        instruction,
+        mode: raw.mode === "iterate" ? "iterate" : "user",
+      };
+    }
+
+    function loadCustoms() {
+      try {
+        const text = localStorage.getItem(CUSTOM_KEY);
+        if (!text) return [];
+        const parsed = JSON.parse(text);
+        const rows = Array.isArray(parsed) ? parsed : Array.isArray(parsed?.templates) ? parsed.templates : [];
+        return rows.map(normalizeCustom).filter(Boolean).slice(0, 40);
+      } catch {
+        return [];
+      }
+    }
+
+    function persistCustoms(rows) {
+      try {
+        localStorage.setItem(CUSTOM_KEY, JSON.stringify({ version: 1, templates: rows }));
+      } catch {
+        // Custom templates are a convenience; a full storage keeps the panel usable.
+      }
+    }
+
+    function customToRow(entry) {
+      return {
+        id: entry.id,
+        mode: entry.mode,
+        category: CUSTOM_CATEGORY,
+        label: entry.label,
+        labelEn: entry.label,
+        description: entry.instruction,
+        descriptionEn: entry.instruction,
+        useWhen: "按你写的固定要求改写",
+        useWhenEn: "Follows the instruction you saved",
+        instruction: entry.instruction,
+        custom: true,
+      };
     }
 
     /** Oldest-first chain that shares a root id. */
@@ -942,6 +1017,8 @@ window.__ModuleLoader__.load({
       const [check, setCheck] = useState(null);
       const [checking, setChecking] = useState(false);
       const [checkError, setCheckError] = useState("");
+      const [customs, setCustoms] = useState(loadCustoms);
+      const [editForm, setEditForm] = useState(null);
 
       const seatRef = useRef(null);
       const panelRef = useRef(null);
@@ -962,7 +1039,8 @@ window.__ModuleLoader__.load({
 
       const busy = status === "running";
       const panelCatalog = catalog ?? EMPTY_CATALOG;
-      const family = templatesForMode(panelCatalog, mode);
+      const customRows = customs.filter((entry) => entry.mode === mode).map(customToRow);
+      const family = [...templatesForMode(panelCatalog, mode), ...customRows];
       const templateRow = family.find((row) => row.id === templateId) ?? family[0] ?? null;
       const sourceNow = mode === "iterate" ? result || draft : draft;
       const chain = chainOf(store.entries, rootId);
@@ -1152,6 +1230,7 @@ window.__ModuleLoader__.load({
           targetPrompt: currentDraft || sourceText,
           templateId: picked.id,
         };
+        if (picked.custom) body.customTemplate = { label: picked.label, instruction: picked.instruction };
         if (mode === "iterate") {
           body.lastOptimizedPrompt = sourceText;
           body.iterateInput = feedback.trim();
@@ -1228,6 +1307,88 @@ window.__ModuleLoader__.load({
         }
       }
       runRef.current = run;
+
+      function openEditor(entry) {
+        setMenu(null);
+        setEditForm(entry
+          ? { id: entry.id, label: entry.label, instruction: entry.instruction, mode: entry.mode }
+          : { id: "", label: "", instruction: "", mode: mode === "iterate" ? "iterate" : "user" });
+        setError("");
+        setView("edit");
+      }
+
+      function saveCustom() {
+        if (!editForm) return;
+        const instruction = editForm.instruction.trim();
+        if (instruction.length === 0) {
+          setError(T("写一句改写要求再保存。"));
+          return;
+        }
+        const entry = {
+          id: editForm.id || `c-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+          label: editForm.label.trim().slice(0, 60) || instruction.slice(0, 24),
+          instruction: instruction.slice(0, 2000),
+          mode: editForm.mode === "iterate" ? "iterate" : "user",
+        };
+        const next = customs.filter((row) => row.id !== entry.id).concat(entry);
+        setCustoms(next);
+        persistCustoms(next);
+        setTemplateId(entry.id);
+        setEditForm(null);
+        setView("run");
+        setError("");
+      }
+
+      function removeCustom() {
+        if (!editForm?.id) return;
+        const next = customs.filter((row) => row.id !== editForm.id);
+        setCustoms(next);
+        persistCustoms(next);
+        setEditForm(null);
+        setTemplateId("");
+        setView("run");
+      }
+
+      function exportCustoms() {
+        const payload = JSON.stringify({ version: 1, templates: customs }, null, 2);
+        const url = URL.createObjectURL(new Blob([payload], { type: "application/json" }));
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "prompt-optimize-templates.json";
+        link.click();
+        later(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      function importCustoms(event) {
+        const file = event.target.files?.[0];
+        event.target.value = "";
+        if (!file) return;
+        file.text().then((text) => {
+          let rows = [];
+          try {
+            const parsed = JSON.parse(text);
+            rows = (Array.isArray(parsed) ? parsed : Array.isArray(parsed?.templates) ? parsed.templates : [])
+              .map(normalizeCustom)
+              .filter(Boolean);
+          } catch {
+            rows = [];
+          }
+          if (rows.length === 0) {
+            setError(T("这个文件里没有可导入的模板。"));
+            return;
+          }
+          const merged = customs.slice();
+          for (const row of rows) {
+            const at = merged.findIndex((item) => item.id === row.id);
+            if (at >= 0) merged[at] = row;
+            else merged.push(row);
+          }
+          const next = merged.slice(0, 40);
+          setCustoms(next);
+          persistCustoms(next);
+          setError("");
+        }).catch(() => setError(T("导入失败")));
+      }
 
       function chooseMode(next) {
         if (busy || next === mode) return;
@@ -1464,6 +1625,21 @@ window.__ModuleLoader__.load({
           return h("div", { className: "po-head" },
             h(IconButton, { name: "chevronLeft", label: T("返回"), onClick: () => setReview(false) }),
             h("div", { className: "po-title" }, h("span", null, T("确认替换草稿"))),
+            h("div", { className: "po-spacer" }),
+            h(IconButton, { name: "x", label: T("关闭"), onClick: close }),
+          );
+        }
+        if (view === "edit") {
+          return h("div", { className: "po-head" },
+            h(IconButton, {
+              name: "chevronLeft",
+              label: T("返回"),
+              onClick: () => { setEditForm(null); setView("run"); },
+            }),
+            h("div", { className: "po-title" },
+              h(Icon, { name: "braces", size: 14 }),
+              h("span", null, T("自定义模板")),
+            ),
             h("div", { className: "po-spacer" }),
             h(IconButton, { name: "x", label: T("关闭"), onClick: close }),
           );
@@ -1828,6 +2004,69 @@ window.__ModuleLoader__.load({
         h("div", { className: "po-empty" }, h("strong", null, T("没有可对比的版本"))),
       );
 
+      const editView = editForm ? h("div", { className: "po-body" },
+        error ? h("p", { className: "po-note", style: { color: "var(--dsw-alias-state-error)" } }, error) : null,
+        h("div", { className: "po-field" },
+          h("label", { className: "po-note" }, T("模板名称")),
+          h("input", {
+            className: "po-input",
+            style: { minHeight: 34, maxHeight: 34 },
+            value: editForm.label,
+            placeholder: T("例如：客服口吻"),
+            maxLength: 60,
+            onChange: (event) => setEditForm((form) => ({ ...form, label: event.target.value })),
+          }),
+        ),
+        h("div", { className: "po-field" },
+          h("label", { className: "po-note" }, T("改写要求")),
+          h("textarea", {
+            className: "po-input",
+            style: { minHeight: 110 },
+            value: editForm.instruction,
+            placeholder: T("例如：把语气改成客服口吻，结尾加一句道歉，不要超过 150 字。"),
+            maxLength: 2000,
+            onChange: (event) => setEditForm((form) => ({ ...form, instruction: event.target.value })),
+          }),
+        ),
+        h("div", { className: "po-field" },
+          h("label", { className: "po-note" }, T("适用对象")),
+          h("div", { className: "po-tabs" },
+            h("button", {
+              type: "button",
+              className: "po-tab",
+              "aria-selected": editForm.mode === "user" ? "true" : "false",
+              onClick: () => setEditForm((form) => ({ ...form, mode: "user" })),
+            }, T("提示词")),
+            h("button", {
+              type: "button",
+              className: "po-tab",
+              "aria-selected": editForm.mode === "iterate" ? "true" : "false",
+              onClick: () => setEditForm((form) => ({ ...form, mode: "iterate" })),
+            }, T("迭代优化")),
+          ),
+        ),
+        h("div", { style: { display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" } },
+          h(Button, { variant: "primary", onClick: saveCustom, icon: "check" }, T("保存")),
+          editForm.id ? h(Button, { variant: "ghost", onClick: removeCustom, icon: "trash" }, T("删除")) : null,
+          h("label", {
+            className: "po-btn",
+            "data-variant": "ghost",
+            style: { cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 5 },
+          },
+            h(Icon, { name: "plus", size: 12 }),
+            T("导入 JSON"),
+            h("input", {
+              type: "file",
+              accept: "application/json,.json",
+              style: { display: "none" },
+              onChange: importCustoms,
+            }),
+          ),
+          customs.length > 0 ? h(Button, { variant: "ghost", onClick: exportCustoms, icon: "arrowRight" }, T("导出全部")) : null,
+        ),
+        h("p", { className: "po-note" }, T("自定义模板只保存在这台浏览器里，不会上传。")),
+      ) : null;
+
       const reviewRows = result ? collapseDiff(diffLines(draft, result), 2) : [];
       const reviewView = h("div", { className: "po-body", style: { padding: 0 } },
         result
@@ -1890,7 +2129,7 @@ window.__ModuleLoader__.load({
         h(Button, { variant: "primary", onClick: () => restore(cmpEntry) }, T("替换草稿")),
       ) : null;
 
-      const body = review ? reviewView : view === "history" ? historyView : view === "compare" ? compareView : runView;
+      const body = review ? reviewView : view === "edit" ? editView : view === "history" ? historyView : view === "compare" ? compareView : runView;
 
       const panel = open && anchor
         ? createPortal(
@@ -2003,6 +2242,35 @@ window.__ModuleLoader__.load({
               ),
             ));
           }
+          items.push(h("div", { key: "c-custom", className: "po-menugroup" }, T("自定义")));
+          for (const row of customRows) {
+            const checked = row.id === templateRow?.id;
+            items.push(h("button", {
+              key: row.id,
+              type: "button",
+              className: "po-menuitem",
+              "data-checked": checked ? "true" : "false",
+              onClick: () => pickTemplate(row.id),
+            },
+              h("span", { className: "po-menucheck" }, checked ? h(Icon, { name: "check", size: 12 }) : null),
+              h("span", { className: "po-mi" },
+                h("strong", null, row.label),
+                h("small", null, row.instruction),
+              ),
+            ));
+          }
+          items.push(h("button", {
+            key: "c-manage",
+            type: "button",
+            className: "po-menuitem",
+            onClick: () => openEditor(null),
+          },
+            h("span", { className: "po-menucheck" }, h(Icon, { name: "plus", size: 12 })),
+            h("span", { className: "po-mi" },
+              h("strong", null, T("新建自定义模板")),
+              h("small", null, T("写好要求，以后一键复用")),
+            ),
+          ));
           return items;
         })()), document.body)
         : null;

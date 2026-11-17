@@ -9,7 +9,7 @@
  */
 
 import { buildCatalog } from "./catalog.js";
-import { buildExtractionPrompt, buildPrompt, buildReviewPrompt } from "./prompts.js";
+import { buildCustomPrompt, buildExtractionPrompt, buildPrompt, buildReviewPrompt } from "./prompts.js";
 import { applyVariables, parseVariables } from "./placeholders.js";
 import { normalizeReview, parseReviewJson } from "./review.js";
 import { defaultTemplateFor, getTemplate, templateMatchesMode } from "./spec.js";
@@ -167,6 +167,20 @@ function optionalPin(body) {
  * Validate one optimize request and resolve its template.
  * @param {Record<string, unknown>} body
  */
+/** A user-defined template: a label plus one rewrite instruction. */
+function readCustomTemplate(value) {
+  if (value === undefined || value === null) return null;
+  if (typeof value !== "object" || Array.isArray(value)) {
+    throw new RequestError(400, "invalid-custom-template", "customTemplate 必须是一个对象。");
+  }
+  const label = readText(value.label, "customTemplate.label").trim().slice(0, 60);
+  const instruction = readText(value.instruction, "customTemplate.instruction", { required: true }).trim();
+  if (instruction.length > 2_000) {
+    throw new RequestError(400, "custom-template-too-long", "自定义要求最多 2000 字。");
+  }
+  return { label: label || "自定义", instruction };
+}
+
 function readOptimizeRequest(body) {
   if (typeof body !== "object" || body === null || Array.isArray(body)) {
     throw new RequestError(400, "invalid-body", "请求体必须是一个 JSON 对象。");
@@ -188,8 +202,11 @@ function readOptimizeRequest(body) {
     }
   }
 
+  const custom = readCustomTemplate(body.customTemplate);
   let templateId = typeof body.templateId === "string" ? body.templateId : "";
-  if (templateId.length > 0) {
+  if (custom) {
+    templateId = "custom";
+  } else if (templateId.length > 0) {
     const template = getTemplate(templateId);
     if (!template) throw new RequestError(400, "unknown-template", `未知模板：${templateId}`);
     if (!templateMatchesMode(template.id, mode)) {
@@ -211,6 +228,7 @@ function readOptimizeRequest(body) {
     lastOptimizedPrompt,
     iterateInput,
     templateId,
+    custom,
     pin: optionalPin(body),
     sessionId,
   };
@@ -341,11 +359,17 @@ export function apply(ctx) {
         );
       }
 
-      const { system, user } = buildPrompt(request.templateId, {
-        originalPrompt: request.targetPrompt,
-        lastOptimizedPrompt: request.lastOptimizedPrompt,
-        iterateInput: request.iterateInput,
-      });
+      const { system, user } = request.custom
+        ? buildCustomPrompt(request.custom, {
+          originalPrompt: request.targetPrompt,
+          lastOptimizedPrompt: request.lastOptimizedPrompt,
+          iterateInput: request.iterateInput,
+        }, request.mode)
+        : buildPrompt(request.templateId, {
+          originalPrompt: request.targetPrompt,
+          lastOptimizedPrompt: request.lastOptimizedPrompt,
+          iterateInput: request.iterateInput,
+        });
 
       const controller = new AbortController();
       const abort = () => {

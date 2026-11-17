@@ -308,6 +308,28 @@ export function buildExtractionPrompt({ promptContent, existingNames = [] }) {
  *
  * @param {{ promptContent: string }} input
  */
+/**
+ * A user-defined template: the only thing the user supplies is the rewrite
+ * instruction, so it gets the same data fence and the same output rules as the
+ * built-in builders.
+ */
+const CUSTOM_SYSTEM = `你是资深提示词工程师。你会收到一段「改写要求」和一段「原始提示词」，请严格按改写要求重写原始提示词。
+${NO_INVENTION}
+${OUTPUT_ONLY}
+只要改写要求不违背原意，就必须逐条落实：结构、语气、输出格式、边界都要按它调整。`;
+
+export function buildCustomPrompt(custom, { originalPrompt, lastOptimizedPrompt, iterateInput }, mode) {
+  const parts = [material("改写要求", custom.instruction)];
+  if (mode === "iterate") {
+    parts.push(material("上一版结果", lastOptimizedPrompt));
+    parts.push(material("本次修改要求", iterateInput));
+    parts.push(material("最初的草稿", originalPrompt));
+  } else {
+    parts.push(material("原始提示词", originalPrompt));
+  }
+  return { system: CUSTOM_SYSTEM, user: parts.join("\n\n") };
+}
+
 export function buildReviewPrompt({ promptContent }) {
   const system = [
     "你是提示词审阅员。用户给你一段准备发给智能体的提示词，你要指出它具体哪里会导致执行偏差。",
