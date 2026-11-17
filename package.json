@@ -60,11 +60,9 @@
     "cordis.patch.yml",
     "assets/icon-180.png",
     "screenshots.json",
-    "README.md",
-    "README_en.md",
-    "LICENSE",
-    "docs/TEMPLATES.md",
-    "docs/TEMPLATES.en.md"
+    "README*.md",
+    "docs/TEMPLATES*.md",
+    "LICENSE"
   ],
   "repository": {
     "type": "git",

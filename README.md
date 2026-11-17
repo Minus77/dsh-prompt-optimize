@@ -2,9 +2,11 @@
 
 [![npm](https://img.shields.io/npm/v/@minus77/dsh-prompt-optimize?color=3a42d6)](https://www.npmjs.com/package/@minus77/dsh-prompt-optimize) [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
+**中文** · [English](./README_en.md) · [Español](./README_es.md) · [Français](./README_fr.md) · [Deutsch](./README_de.md) · [Русский](./README_ru.md) · [日本語](./README_ja.md)
+
 一个 DeepSeek Harness 插件：把输入框里的草稿改写成可直接使用的提示词。替换前先看逐行 diff，替换后 9 秒内可撤销；带本地历史、版本对比和一套可复用的模板。
 
-[English](./README_en.md) · [模板说明](./docs/TEMPLATES.md)
+模板怎么选、每个模板适合什么场景：见 [模板说明](./docs/TEMPLATES.md)。
 
 ![优化面板](./docs/screenshots/02-panel.png)
 
@@ -31,7 +33,7 @@
 | 参数化 | 从结果中抽取可替换片段（最多 5 个），一键写成 `{{变量}}` |
 | 模板库 | 7 个内置模板，按“基础 / 结构 / 示范 / 推理 / 迭代”分组 |
 | 模型固定 | 默认跟随当前模型，也可在面板里指定某个模型 |
-| 中英双语 | 跟随界面语言自动切换，无需单独设置 |
+| 中英双语界面 | 跟随界面语言自动切换（当前内置中文与英文），无需单独设置 |
 | 隐私优先 | 历史默认不开启，开启后只写本机 localStorage |
 
 ## 安装

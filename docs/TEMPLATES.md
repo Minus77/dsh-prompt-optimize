@@ -1,5 +1,7 @@
 # 模板说明
 
+**中文** · [English](./TEMPLATES.en.md) · [Español](./TEMPLATES.es.md) · [Français](./TEMPLATES.fr.md) · [Deutsch](./TEMPLATES.de.md) · [Русский](./TEMPLATES.ru.md) · [日本語](./TEMPLATES.ja.md)
+
 插件内置 7 个模板。它们在“提示词优化”面板右上角切换，切换只改变**改写方式**，不会改动你已经写好的草稿。
 
 模板解决的是同一件事的不同切面：

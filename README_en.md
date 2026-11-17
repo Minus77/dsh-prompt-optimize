@@ -2,9 +2,11 @@
 
 [![npm](https://img.shields.io/npm/v/@minus77/dsh-prompt-optimize?color=3a42d6)](https://www.npmjs.com/package/@minus77/dsh-prompt-optimize) [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
+[中文](./README.md) · **English** · [Español](./README_es.md) · [Français](./README_fr.md) · [Deutsch](./README_de.md) · [Русский](./README_ru.md) · [日本語](./README_ja.md)
+
 A DeepSeek Harness plugin that turns the rough draft in your composer into a prompt you can actually use. You review a line-by-line diff before it replaces anything, you can undo for nine seconds afterwards, and it keeps a local history with version compare and a library of reusable templates.
 
-[中文](./README.md) · [Templates](./docs/TEMPLATES.en.md)
+Which template to pick, and what each one is for: see [the template guide](./docs/TEMPLATES.en.md).
 
 ![Optimizer panel](./docs/screenshots/02-panel.png)
 
@@ -31,7 +33,7 @@ Most prompts that "don't work" are not a model problem — they are a draft prob
 | Placeholders | Extract up to 5 reusable fragments into `{{snake_case}}` variables |
 | Templates | 7 built-ins grouped as basic / structure / examples / reasoning / iterate |
 | Model pin | Follow the session model, or pin one for this panel only |
-| Bilingual | Follows the app locale automatically |
+| Bilingual UI (zh/en) | Follows the app locale automatically |
 | Privacy | History off by default; when on, it stays in `localStorage` |
 
 ## Install
