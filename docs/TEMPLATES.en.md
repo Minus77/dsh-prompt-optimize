@@ -180,6 +180,212 @@ Only the tone-related phrasing and that list change; headings, punctuation and t
 
 ---
 
+## Code review
+
+**Mode**: Prompt · **Group**: Engineering
+
+Turns "have a look at this code" into a scoped, prioritized review: state what the change is for, rank the concerns, and fix the output format so you do not get a flat list of style opinions.
+
+**Output**: scope / priorities / format (severity, location, issue, impact, fix) / out of scope / evidence.
+
+**Good for**
+
+- self-review before a commit, or asking for a PR review;
+- changes that span several files and may break callers;
+- feedback you can discuss, not "consider refactoring".
+
+**Not for**: explaining what a piece of code does (task brief) or implementing the fix (implementation task).
+
+**Example**
+
+> Draft: have a look at this code, anything wrong?
+
+Roughly becomes: scope = the three files in this PR, which adds idempotency to checkout; priorities = correctness > concurrency > performance > readability; each finding cites file:line; no rewriting whole files, no naming nitpicks, no guessing upstream callers.
+
+---
+
+## Implementation task
+
+**Mode**: Prompt · **Group**: Engineering
+
+Fills a coding request out into an engineering brief: goal and acceptance, technical constraints, interface contracts, edge cases and failure handling, delivery shape. It produces a **task description**, not the code.
+
+**Output**: goal and acceptance / constraints / interfaces / edges and failures / delivery / open questions.
+
+**Good for**
+
+- handing a medium change to an agent or a teammate;
+- a one-line request whose acceptance criteria you already know;
+- shared modules where interfaces must be agreed first.
+
+**Not for**: exploratory prototypes where the design emerges while coding.
+
+**Example**
+
+> Draft: make export async so it stops blocking the request
+
+Roughly becomes: trigger endpoint, job status field, polling or callback, concurrency cap, retry and timeout, permission checks, how the UI shows progress, and which existing callers must change with it.
+
+---
+
+## SQL query
+
+**Mode**: Prompt · **Group**: Engineering
+
+Writes a data request as a query task with explicit definitions, fields and performance limits, and asks for the assumptions to be listed separately.
+
+**Output**: tables and fields / definitions (time, dedupe, nulls, units) / result shape / performance limits / permissions / assumptions.
+
+**Good for**
+
+- reports, dashboards and ad-hoc analysis;
+- metrics that are easy to define differently (active, retention, GMV);
+- large scans where index and range should be stated up front.
+
+**Not for**: explaining an existing query, or schema migrations.
+
+**Example**
+
+> Draft: new users per channel last week
+
+Roughly becomes: definition of a new user (first signup or first order), channel field and dedupe key, timezone and the exact week bounds, whether test accounts count, ordering, and the allowed scan range and index.
+
+---
+
+## Test design
+
+**Mode**: Prompt · **Group**: Engineering
+
+Writes a test request as a case table covering happy path, boundaries, failures and permissions, with priorities and what should be automated first.
+
+**Output**: target and risks / case table (id, preconditions, steps, expected) / coverage / priority / automation advice.
+
+**Good for**
+
+- filling in cases before a release;
+- confirming no regression after a bug fix;
+- giving someone unfamiliar with the feature an actionable checklist.
+
+**Not for**: asking for automation scripts directly (only when the draft says so).
+
+**Example**
+
+> Draft: write test cases for login
+
+Roughly becomes: password, SMS and third-party login each covered; lockout after N failures; empty, very long and special-character input; unverified email; visible differences per role; each case numbered and prioritized.
+
+---
+
+## Structured extraction
+
+**Mode**: Prompt · **Group**: Structure
+
+Turns "pull a few fields out of this" into a schema-driven extraction task with strict JSON output and explicit missing-value rules.
+
+**Output**: input shape / schema (name, type, required, enum) / missing and conflict rules / JSON only / one example.
+
+**Good for**
+
+- turning contracts, emails, tickets or pages into structured data;
+- batch runs whose output must load straight into a database;
+- leaving blanks instead of guessing.
+
+**Not for**: summarising or rewriting content; images that need OCR.
+
+**Example**
+
+> Draft: get company, contact and amount from these emails
+
+Roughly becomes: company from body or signature, contact with or without title, currency and tax treatment of the amount, which amount wins when several appear, null when absent, JSON only.
+
+---
+
+## Translation
+
+**Mode**: Prompt · **Group**: Writing
+
+Writes a translation request as a localisation task with audience, glossary and format rules. The point is what must not move: brand names, field names, placeholders, Markdown structure.
+
+**Output**: language and region / audience and tone / glossary / format / no additions or omissions.
+
+**Good for**
+
+- product copy, help pages and email;
+- a specific market where rewriting beats literal translation;
+- text containing `{{variables}}`, code blocks or links.
+
+**Not for**: legal text that still needs a human reviewer.
+
+**Example**
+
+> Draft: translate this into Japanese for a customer
+
+Roughly becomes: business Japanese for a Japanese enterprise customer; keep product names and `{{user_name}}`; keep Markdown headings and lists; no added or dropped information; output the translation only.
+
+---
+
+## Copy polish
+
+**Mode**: Prompt · **Group**: Writing
+
+Writes a polish request as a bounded revision task: how deep edits may go, what must be preserved, and no expansion. Keeps the model from adding claims, examples or length.
+
+**Output**: register and reader / allowed edit depth / must keep / forbidden / full text plus up to three notes.
+
+**Good for**
+
+- drafts whose facts are fine but whose flow is not;
+- keeping one voice across outbound copy;
+- limiting the change to wording, not structure.
+
+**Not for**: content that lacks the argument and needs a rewrite.
+
+**Example**
+
+> Draft: make this sound more formal
+
+Roughly becomes: how formal (public notice vs internal email), whether paragraph order may change, which numbers and conclusions must stay verbatim, whether sentences may be merged, and a short list of main changes at the end.
+
+---
+
+## Grounded Q&A
+
+**Mode**: Prompt · **Group**: Reasoning
+
+Writes "answer from these materials" as a grounded task with citations and an explicit "not covered" verdict, and asks for conflicts to be listed with sources before any judgement.
+
+**Output**: material scope / citation rules / not-covered statement / conflict handling / structure (answer, evidence, gaps).
+
+**Good for**
+
+- answering from docs, policies or contracts;
+- answers that must be traceable to a source;
+- material that may contradict itself.
+
+**Not for**: questions with no material to ground on.
+
+**Example**
+
+> Draft: how is annual leave calculated, per the handbook
+
+Roughly becomes: handbook only, cite clause numbers; say "not covered" for anything absent (e.g. proration on exit); when the handbook and a later notice disagree, quote both first, then judge.
+
+---
+
+## Custom templates
+
+The last item in the template menu is "New custom template", with three fields:
+
+| Field | Purpose |
+| --- | --- |
+| Name | Shown in the menu; up to 40 characters |
+| Rewrite instruction | How the model should rewrite; up to 2000 characters |
+| Applies to | One line on which drafts fit; optional |
+
+Custom templates live in this browser's `localStorage` and disappear with site data. Use the JSON export and import in the editor to move them to another machine or share them.
+
+---
+
 ## Choosing
 
 | Your situation | Template |

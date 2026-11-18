@@ -2,15 +2,19 @@
 
 [中文](./TEMPLATES.md) · [English](./TEMPLATES.en.md) · [Español](./TEMPLATES.es.md) · **Français** · [Deutsch](./TEMPLATES.de.md) · [Русский](./TEMPLATES.ru.md) · [日本語](./TEMPLATES.ja.md)
 
-Le plugin fournit sept modèles. Vous les changez depuis le coin supérieur droit du panneau de l'optimiseur ; en changer modifie **la façon dont le brouillon est réécrit**, jamais le brouillon lui-même.
+Le plugin fournit quinze modèles. Vous les changez depuis le coin supérieur droit du panneau de l'optimiseur ; en changer modifie **la façon dont le brouillon est réécrit**, jamais le brouillon lui-même.
 
 Chaque modèle couvre une facette différente du même problème :
 
 - **Basique** — transformer une phrase en tâche complète (Task brief, Role contract, Agent persona) ;
-- **Structure** — remonter les critères d'acceptation en tête (Delivery contract) ;
+- **Structure** — remonter les critères d'acceptation ou le schéma visé (Delivery contract, Structured extraction) ;
 - **Exemples** — fixer le style et le format par des exemples (Worked examples) ;
-- **Raisonnement** — imposer une exécution par étapes avec points de contrôle (Reasoning steps) ;
+- **Raisonnement** — étapes et contrôles intermédiaires, ou répondre uniquement à partir du matériau fourni (Reasoning steps, Grounded Q&A) ;
+- **Ingénierie** — relecture de code, implémentation, SQL et conception de tests ;
+- **Rédaction** — traduction et polissage, où l'enjeu est jusqu'où la retouche peut aller ;
 - **Itération** — retouches minimales sur une version existante (Incremental edit).
+
+Le dernier élément du menu crée un **modèle personnalisé** : votre propre consigne de réécriture, stockée dans ce navigateur, importable et exportable en JSON.
 
 ---
 
@@ -177,6 +181,172 @@ Applique une note de modification au résultat précédent avec un mouvement min
 > Note : ton plus léger, et condense la longue liste « à confirmer » en trois lignes
 
 Seules les formulations liées au ton et cette liste changent ; les titres, la ponctuation et le reste restent identiques.
+
+---
+
+## Code review
+
+**Mode** : prompt · **Groupe** : ingénierie
+
+Transforme « jette un œil à ce code » en relecture cadrée et priorisée : à quoi sert le changement, quoi regarder d'abord, et dans quel format répondre.
+
+**Sortie** : périmètre / priorités / format (gravité, emplacement, problème, impact, correctif) / hors périmètre / preuves.
+
+**Pour** : auto-relecture avant un commit ; changement sur plusieurs fichiers pouvant casser des appels.
+**Pas pour** : expliquer ce que fait un code, ou implémenter le correctif.
+
+**Exemple**
+
+> Brouillon : regarde ce code, il y a un problème ?
+
+Devient : périmètre = les trois fichiers du PR qui ajoute l'idempotence au checkout ; priorités = correction > concurrence > performance > lisibilité ; chaque constat cite fichier:ligne ; pas de réécriture complète ni de remarques sur les noms.
+
+---
+
+## Implementation task
+
+**Mode** : prompt · **Groupe** : ingénierie
+
+Complète une demande de code en brief d'ingénierie : objectif et acceptation, contraintes techniques, contrats d'interface, cas limites et forme de livraison. Produit une **description de tâche**, pas le code.
+
+**Sortie** : objectif et acceptation / contraintes / interfaces / bords et échecs / livraison / questions ouvertes.
+
+**Pour** : confier un changement moyen à un agent ou un collègue ; modules partagés dont l'interface doit être convenue avant.
+**Pas pour** : prototypes exploratoires dont la conception naît en écrivant.
+
+**Exemple**
+
+> Brouillon : rends l'export asynchrone pour qu'il ne bloque plus
+
+Devient : endpoint de déclenchement, champ de statut, polling ou callback, plafond de concurrence, reprise et délai maximal, permissions, affichage de la progression et appels existants à modifier.
+
+---
+
+## SQL query
+
+**Mode** : prompt · **Groupe** : ingénierie
+
+Écrit une demande de données comme tâche SQL avec définitions, champs et limites de performance explicites, et demande de lister les hypothèses à part.
+
+**Sortie** : tables et champs / définitions (temps, doublons, nuls, unités) / forme du résultat / performance / permissions / hypothèses.
+
+**Pour** : rapports et analyses ponctuelles ; métriques ambiguës (actif, rétention, GMV).
+**Pas pour** : expliquer une requête existante ou migrer un schéma.
+
+**Exemple**
+
+> Brouillon : nouveaux utilisateurs par canal la semaine dernière
+
+Devient : définition d'un nouvel utilisateur, champ canal et clé de dédoublonnage, fuseau et bornes exactes de la semaine, comptes de test ou non, ordre, plage de scan et index autorisés.
+
+---
+
+## Test design
+
+**Mode** : prompt · **Groupe** : ingénierie
+
+Écrit une demande de tests comme tableau de cas couvrant chemin nominal, limites, échecs et permissions, avec priorités et ce qu'il faut automatiser d'abord.
+
+**Sortie** : objet et risques / tableau (id, préconditions, étapes, attendu) / couverture / priorité / automatisation.
+
+**Pour** : compléter les cas avant une mise en ligne ; vérifier qu'un correctif ne casse rien.
+**Pas pour** : demander des scripts, sauf si le brouillon le précise.
+
+**Exemple**
+
+> Brouillon : écris des cas de test pour le login
+
+Devient : mot de passe, SMS et tiers séparément ; blocage après N échecs ; vide, très long, caractères spéciaux ; e-mail non vérifié ; différences par rôle ; chaque cas numéroté et priorisé.
+
+---
+
+## Structured extraction
+
+**Mode** : prompt · **Groupe** : structure
+
+Transforme « sors quelques champs de ça » en extraction guidée par schéma, avec JSON strict et règles explicites pour l'absent.
+
+**Sortie** : forme d'entrée / schéma (nom, type, obligatoire, énum) / règles d'absence et de conflit / JSON seul / un exemple.
+
+**Pour** : contrats, e-mails, tickets ou pages convertis en données ; lots devant entrer en base.
+**Pas pour** : résumer ou réécrire ; images nécessitant de l'OCR.
+
+**Exemple**
+
+> Brouillon : extrais société, contact et montant de ces e-mails
+
+Devient : société du corps ou de la signature, contact avec ou sans fonction, devise et fiscalité du montant, quel montant retenir s'il y en a plusieurs, null sinon, JSON seul.
+
+---
+
+## Translation
+
+**Mode** : prompt · **Groupe** : rédaction
+
+Écrit une demande de traduction comme tâche de localisation avec public, glossaire et format. L'enjeu est ce qui ne bouge pas : marques, champs, espaces réservés, structure Markdown.
+
+**Sortie** : langue et région / public et ton / glossaire / format / sans ajout ni omission.
+
+**Pour** : textes produit, aide et e-mail ; un marché précis où réécrire vaut mieux que traduire littéralement ; textes avec `{{variables}}` ou blocs de code.
+**Pas pour** : textes juridiques exigeant encore une relecture humaine.
+
+**Exemple**
+
+> Brouillon : traduis ça en japonais pour un client
+
+Devient : japonais des affaires pour un client japonais ; conserver noms de produit et `{{user_name}}` ; conserver titres et listes Markdown ; ne rien ajouter ni retrancher ; uniquement la traduction.
+
+---
+
+## Copy polish
+
+**Mode** : prompt · **Groupe** : rédaction
+
+Écrit une demande de polissage comme révision bornée : jusqu'où modifier, ce qui doit rester, et pas d'ajout. Empêche le modèle d'ajouter des arguments, des exemples ou de la longueur.
+
+**Sortie** : registre et lecteur / profondeur permise / à conserver / interdits / texte complet et trois notes max.
+
+**Pour** : brouillons exacts mais mal écrits ; garder une seule voix ; limiter la modification aux mots.
+**Pas pour** : contenu auquel il manque l'argumentation.
+
+**Exemple**
+
+> Brouillon : rends ça plus formel
+
+Devient : à quel point (avis public ou e-mail interne), si l'ordre des paragraphes peut changer, quels chiffres et conclusions restent littéraux, si les phrases peuvent fusionner, et une courte liste des changements à la fin.
+
+---
+
+## Grounded Q&A
+
+**Mode** : prompt · **Groupe** : raisonnement
+
+Écrit « réponds à partir de ces documents » comme tâche sourcée avec citations et déclaration explicite du non-couvert ; en cas de conflit, demande de citer les sources avant de juger.
+
+**Sortie** : périmètre du matériau / règles de citation / déclaration de non-couvert / conflits / structure (réponse, preuves, manques).
+
+**Pour** : répondre depuis documentation, politiques ou contrats ; réponses traçables.
+**Pas pour** : questions sans matériau de référence.
+
+**Exemple**
+
+> Brouillon : d'après le manuel, comment sont calculés les congés ?
+
+Devient : le manuel seul, avec numéros de clause ; dire « non couvert » pour ce qui manque (prorata au départ) ; si le manuel et une note ultérieure divergent, citer les deux puis juger.
+
+---
+
+## Modèles personnalisés
+
+Le dernier élément du menu est « Nouveau modèle personnalisé », avec trois champs :
+
+| Champ | Rôle |
+| --- | --- |
+| Nom | Affiché dans le menu ; 40 caractères max |
+| Consigne de réécriture | Comment le modèle doit réécrire ; 2000 caractères max |
+| Public visé | Une ligne sur les brouillons concernés ; facultatif |
+
+Ils vivent dans le `localStorage` de ce navigateur et disparaissent avec les données du site. Utilisez l'export et l'import JSON de l'éditeur pour les transférer ou les partager.
 
 ---
 

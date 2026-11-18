@@ -2,15 +2,17 @@
 
 [中文](./TEMPLATES.md) · [English](./TEMPLATES.en.md) · **Español** · [Français](./TEMPLATES.fr.md) · [Deutsch](./TEMPLATES.de.md) · [Русский](./TEMPLATES.ru.md) · [日本語](./TEMPLATES.ja.md)
 
-El plugin incluye siete plantillas. Se cambian desde la esquina superior derecha del panel del optimizador; cambiarlas modifica **cómo se reescribe el borrador**, nunca el borrador en sí.
+El plugin incluye quince plantillas. Se cambian desde la esquina superior derecha del panel del optimizador; cambiarlas modifica **cómo se reescribe el borrador**, nunca el borrador en sí.
 
 Cada plantilla cubre una faceta distinta del mismo problema:
 
 - **Básicas** — convierten una frase en una tarea completa (task brief, role contract, agent persona);
-- **Estructura** — suben los criterios de aceptación al principio (delivery contract);
+- **Estructura**: los criterios de aceptación o el esquema objetivo van delante (contrato de entrega, extracción estructurada);
 - **Ejemplos** — fijan estilo y formato con muestras (worked examples);
-- **Razonamiento** — fuerzan una ejecución por pasos con puntos de control (reasoning steps);
+- **Razonamiento**: pasos y comprobaciones intermedias, o responder solo con el material dado (pasos de razonamiento, preguntas con base);
 - **Iteración** — ediciones mínimas sobre una versión existente (incremental edit).
+
+La última opción del menú crea una **plantilla propia**: tu instrucción de reescritura, guardada en este navegador y transportable en JSON.
 
 ---
 
@@ -177,6 +179,172 @@ Aplica una nota de cambio al resultado anterior con el mínimo movimiento: solo 
 > Nota: tono más ligero y reduce la larga lista de “por confirmar” a tres líneas
 
 Solo cambian las frases relacionadas con el tono y esa lista; los títulos, la puntuación y el resto quedan idénticos.
+
+---
+
+## Code review
+
+**Modo**: Prompt · **Grupo**: Ingeniería
+
+Convierte "mira este código" en una revisión acotada y priorizada: para qué es el cambio, qué mirar primero y en qué formato devolverlo.
+
+**Salida**: alcance / prioridades / formato (gravedad, ubicación, problema, impacto, arreglo) / fuera de alcance / evidencia.
+
+**Bien para**: autorrevisión antes de un commit; cambios en varios archivos que pueden romper llamadas.
+**No para**: explicar qué hace un código, o implementar el arreglo.
+
+**Ejemplo**
+
+> Borrador: mira este código, ¿hay algo mal?
+
+Pasa a: alcance = los tres archivos del PR que añade idempotencia al checkout; prioridad = corrección > concurrencia > rendimiento > legibilidad; cada hallazgo cita archivo:línea; sin reescribir archivos ni opinar de nombres.
+
+---
+
+## Implementation task
+
+**Modo**: Prompt · **Grupo**: Ingeniería
+
+Completa una petición de código como encargo de ingeniería: objetivo y aceptación, restricciones técnicas, contratos de interfaz, casos límite y forma de entrega. Produce una **descripción de tarea**, no el código.
+
+**Salida**: objetivo y aceptación / restricciones / interfaces / bordes y fallos / entrega / dudas.
+
+**Bien para**: entregar un cambio mediano a un agente o colega; módulos compartidos donde la interfaz se acuerda antes.
+**No para**: prototipos exploratorios donde el diseño nace al escribir.
+
+**Ejemplo**
+
+> Borrador: haz la exportación asíncrona para que no bloquee
+
+Pasa a: endpoint de disparo, campo de estado, sondeo o callback, límite de concurrencia, reintentos y tiempo máximo, permisos, cómo se muestra el progreso y qué llamadas existentes hay que cambiar.
+
+---
+
+## SQL query
+
+**Modo**: Prompt · **Grupo**: Ingeniería
+
+Escribe una petición de datos como tarea SQL con definiciones, campos y límites de rendimiento explícitos, y pide listar los supuestos aparte.
+
+**Salida**: tablas y campos / definiciones (tiempo, duplicados, nulos, unidades) / forma del resultado / rendimiento / permisos / supuestos.
+
+**Bien para**: informes y análisis puntuales; métricas ambiguas (activo, retención, GMV).
+**No para**: explicar una consulta existente o migrar esquemas.
+
+**Ejemplo**
+
+> Borrador: usuarios nuevos por canal la semana pasada
+
+Pasa a: definición de usuario nuevo, campo de canal y clave de deduplicación, zona horaria y límites exactos de la semana, si cuentan cuentas de prueba, orden y rango de escaneo permitido.
+
+---
+
+## Test design
+
+**Modo**: Prompt · **Grupo**: Ingeniería
+
+Escribe una petición de pruebas como tabla de casos que cubre camino normal, límites, fallos y permisos, con prioridades y qué automatizar primero.
+
+**Salida**: objeto y riesgos / tabla (id, precondiciones, pasos, esperado) / cobertura / prioridad / automatización.
+
+**Bien para**: completar casos antes de publicar; confirmar que un arreglo no rompe nada.
+**No para**: pedir scripts directamente, salvo que el borrador lo diga.
+
+**Ejemplo**
+
+> Borrador: escribe casos de prueba para el login
+
+Pasa a: contraseña, SMS y terceros por separado; bloqueo tras N fallos; vacío, muy largo y caracteres especiales; correo sin verificar; diferencias por rol; cada caso numerado y priorizado.
+
+---
+
+## Structured extraction
+
+**Modo**: Prompt · **Grupo**: Estructura
+
+Convierte "saca unos campos de esto" en una extracción guiada por esquema, con JSON estricto y reglas explícitas para lo que falta.
+
+**Salida**: forma de entrada / esquema (nombre, tipo, obligatorio, enum) / reglas de ausencia y conflicto / solo JSON / un ejemplo.
+
+**Bien para**: contratos, correos, tickets o páginas convertidos en datos; lotes que deben entrar en una base de datos.
+**No para**: resumir o reescribir contenido; imágenes que necesitan OCR.
+
+**Ejemplo**
+
+> Borrador: saca empresa, contacto e importe de estos correos
+
+Pasa a: empresa del cuerpo o de la firma, contacto con o sin cargo, moneda e impuestos del importe, qué importe gana si hay varios, null si no aparece, solo JSON.
+
+---
+
+## Translation
+
+**Modo**: Prompt · **Grupo**: Redacción
+
+Escribe una petición de traducción como tarea de localización con audiencia, glosario y formato. Lo importante es lo que no se mueve: marcas, campos, marcadores y estructura Markdown.
+
+**Salida**: idioma y región / audiencia y tono / glosario / formato / sin añadir ni quitar.
+
+**Bien para**: textos de producto, ayuda y correo; un mercado concreto donde reescribir gana a traducir literal; textos con `{{variables}}` o bloques de código.
+**No para**: textos legales que aún requieren revisión humana.
+
+**Ejemplo**
+
+> Borrador: traduce esto al japonés para un cliente
+
+Pasa a: japonés de negocios para un cliente empresarial; conservar nombres de producto y `{{user_name}}`; conservar títulos y listas Markdown; no añadir ni quitar información; solo la traducción.
+
+---
+
+## Copy polish
+
+**Modo**: Prompt · **Grupo**: Redacción
+
+Escribe una petición de pulido como revisión acotada: hasta dónde puede llegar, qué debe conservarse y sin ampliar. Evita que el modelo añada argumentos, ejemplos o longitud.
+
+**Salida**: registro y lector / profundidad permitida / qué conservar / prohibiciones / texto completo y hasta tres notas.
+
+**Bien para**: borradores correctos pero mal escritos; mantener una sola voz; limitar el cambio a las palabras.
+**No para**: contenido al que le falta el argumento.
+
+**Ejemplo**
+
+> Borrador: haz que suene más formal
+
+Pasa a: cuánto de formal (aviso público o correo interno), si se puede reordenar párrafos, qué cifras y conclusiones se conservan literalmente, si se pueden unir frases, y una lista breve de cambios al final.
+
+---
+
+## Grounded Q&A
+
+**Modo**: Prompt · **Grupo**: Razonamiento
+
+Escribe "responde con estos materiales" como tarea con citas y declaración explícita de lo no cubierto; si hay conflicto, pide listar las fuentes antes de juzgar.
+
+**Salida**: alcance del material / reglas de cita / declaración de no cubierto / conflictos / estructura (respuesta, evidencia, huecos).
+
+**Bien para**: responder desde documentación, políticas o contratos; respuestas que deben ser trazables.
+**No para**: preguntas sin material en que apoyarse.
+
+**Ejemplo**
+
+> Borrador: según el manual, ¿cómo se calculan las vacaciones?
+
+Pasa a: solo el manual, citando número de cláusula; decir "no cubierto" para lo ausente (por ejemplo, prorrateo al salir); si el manual y un aviso posterior chocan, citar ambos primero y luego juzgar.
+
+---
+
+## Plantillas propias
+
+La última opción del menú es "Nueva plantilla propia", con tres campos:
+
+| Campo | Para qué |
+| --- | --- |
+| Nombre | Se muestra en el menú; hasta 40 caracteres |
+| Instrucción de reescritura | Cómo debe reescribir; hasta 2000 caracteres |
+| Aplica a | Una línea sobre qué borradores encajan; opcional |
+
+Viven en el `localStorage` de este navegador y desaparecen con los datos del sitio. Usa la exportación e importación JSON del editor para llevarlas a otra máquina o compartirlas.
 
 ---
 
