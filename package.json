@@ -1,6 +1,6 @@
 {
   "name": "@minus77/dsh-prompt-optimize",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Prompt optimizer for DeepSeek Harness: rewrite a rough draft into a precise prompt, review a line diff, undo within nine seconds, with version history, a template library and a bilingual UI.",
   "type": "module",
   "license": "MIT",

@@ -4,7 +4,7 @@
 
 [中文](./README.md) · [English](./README_en.md) · [Español](./README_es.md) · [Français](./README_fr.md) · [Deutsch](./README_de.md) · **Русский** · [日本語](./README_ja.md)
 
-Плагин для DeepSeek Harness, который превращает черновик из поля ввода в промпт, которым действительно можно пользоваться. Перед заменой вы смотрите построчный diff, после замены девять секунд остаётся на отмену, а локальная история хранит цепочки версий со сравнением и библиотеку переиспользуемых шаблонов.
+Плагин для DeepSeek Harness, который превращает черновик из поля ввода в промпт, которым действительно можно пользоваться. Перед заменой вы смотрите построчный diff, после замены девять секунд остаётся на отмену, а локальная история хранит цепочки версий со сравнением; результат можно проверить по шести критериям, сохранить вторую версию и взять один из 15 встроенных шаблонов или свой.
 
 Какой шаблон выбрать и для чего нужен каждый: см. [руководство по шаблонам](./docs/TEMPLATES.ru.md).
 
@@ -31,7 +31,10 @@
 | История | Последние 50 прогонов, сгруппированы в цепочки версий, повтор / сравнение / удаление |
 | Сравнение | Две колонки плюс локальная построчная сводка структуры |
 | Плейсхолдеры | До 5 переиспользуемых фрагментов выносятся в переменные `{{snake_case}}` |
-| Шаблоны | 7 встроенных, сгруппированы как Basic / Structure / Examples / Reasoning / Iterate |
+| Проверка | Оценка по ясности, контексту, формату, ограничениям, примерам и устойчивости, плюс правки в один клик |
+| Вторая версия | Предыдущий результат прячется за чипом, между двумя версиями можно переключаться |
+| Шаблоны | 15 встроенных: базовые / структура / примеры / рассуждение / инженерия / текст / итерация |
+| Свои шаблоны | Своя инструкция переписывания, хранение в этом браузере, импорт и экспорт в JSON |
 | Фиксация модели | Следовать модели сессии или закрепить свою только для этой панели |
 | Двуязычный интерфейс (zh/en) | Автоматически следует языку приложения |
 | Приватность | История по умолчанию выключена; при включении остаётся в `localStorage` |
@@ -54,8 +57,8 @@ dsh plugin --profile web add @minus77/dsh-prompt-optimize
 ```bash
 git clone https://github.com/Minus77/dsh-prompt-optimize.git
 cd dsh-prompt-optimize
-npm pack          # produces minus77-dsh-prompt-optimize-0.1.0.tgz
-dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.1.0.tgz
+npm pack          # produces minus77-dsh-prompt-optimize-0.2.0.tgz
+dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.2.0.tgz
 ```
 
 </details>
@@ -85,7 +88,7 @@ dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.1.0.tgz
 ### Локальная разработка
 
 ```bash
-npm test                                   # 21 unit tests, no network
+npm test                                   # 32 unit tests, no network
 dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 ```
 
@@ -108,6 +111,24 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 После подтверждения черновик заменяется, а внизу на девять секунд появляется панель отмены:
 
 ![Отмена](./docs/screenshots/05-undo.png)
+
+### Проверка
+
+Кнопка проверки в шапке результата никогда не меняет черновик. Она показывает общую оценку, шесть оценок по критериям и до пяти проблем по убыванию важности. Каждая проблема цитирует точный фрагмент и предлагает замену, которую можно применить на месте; остальной текст не трогается.
+
+![Проверка](./docs/screenshots/10-checkup.png)
+
+### Вторая версия
+
+Результат не нравится? Нажмите «Вторая версия» внизу. Предыдущая версия уходит за чип, между ними можно переключаться; число символов, время и токены следуют за активной версией.
+
+![Вторая версия](./docs/screenshots/12-variants.png)
+
+### Свои шаблоны
+
+Последний пункт меню шаблонов — «Новый свой шаблон»: название, инструкция переписывания и аудитория. Дальше он появляется рядом со встроенными. Свои шаблоны живут только в localStorage этого браузера; для переноса используйте импорт и экспорт JSON.
+
+![Свой шаблон](./docs/screenshots/11-custom-template.png)
 
 ### Плейсхолдеры
 
@@ -139,19 +160,27 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 
 ## Шаблоны
 
-Семь встроенных шаблонов, сгруппированных по назначению. Полные описания — в [docs/TEMPLATES.ru.md](./docs/TEMPLATES.ru.md).
+Пятнадцать встроенных шаблонов, сгруппированных по назначению. Полные описания — в [docs/TEMPLATES.ru.md](./docs/TEMPLATES.ru.md).
 
 | Шаблон | Режим | Группа | Для чего |
 | --- | --- | --- | --- |
-| Task brief | Prompt | Basic | Большинство черновиков вида «помоги сделать X» |
-| Delivery contract | Prompt | Structure | Работа с явными критериями приёмки |
-| Worked examples | Prompt | Examples | Стиль или формат заданы образцами |
-| Reasoning steps | Prompt | Reasoning | Многошаговый анализ с контрольными точками |
-| Role contract | System | Basic | Долгоживущие ограничения роли |
-| Agent persona | System | Basic | Манера речи и привычки суждения |
-| Incremental edit | Iterate | Iterate | Небольшие правки поверх версии |
+| Task brief | Prompt | Базовые | Большинство черновиков «помоги сделать X» |
+| Delivery contract | Prompt | Структура | Работа с явными критериями приёмки |
+| Structured extraction | Prompt | Структура | Надёжно вытащить фиксированные поля из материала |
+| Worked examples | Prompt | Примеры | Стиль или формат, заданные примерами |
+| Reasoning steps | Prompt | Рассуждение | Многошаговый анализ с промежуточными проверками |
+| Grounded Q&A | Prompt | Рассуждение | Ответ по материалу, со ссылками |
+| Code review | Prompt | Инженерия | Ограниченная и приоритизированная вычитка кода |
+| Implementation task | Prompt | Инженерия | Код с приёмкой, интерфейсами и краевыми случаями |
+| SQL query | Prompt | Инженерия | Метрики, поля и ограничения по производительности |
+| Test design | Prompt | Инженерия | Нормальные, граничные, ошибочные случаи и права |
+| Translation | Prompt | Текст | Аудитория, глоссарий и формат |
+| Copy polish | Prompt | Текст | Насколько глубоко можно править текст |
+| Role contract | System | Базовые | Долгоживущие ограничения роли |
+| Agent persona | System | Базовые | Манера речи и привычки суждения |
+| Incremental edit | Iterate | Итерация | Небольшие правки поверх версии |
 
-Шаблоны переключаются прямо в панели; тогда внизу появляется «rerun with new template» вместо молчаливой перезаписи текущего результата.
+Шаблоны переключаются в панели; тогда внизу появляется «rerun with new template», а текущий результат не перезаписывается молча. В том же меню можно создать свой шаблон и импортировать или экспортировать его в JSON.
 
 ## Горячие клавиши
 
@@ -173,6 +202,8 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 - Только текст: вложения-изображения пока не принимаются как входные данные для переписывания.
 - 60 000 символов на черновик; не более 5 извлечённых переменных.
 - Шаблоны системных промптов есть в API, но панель открывает только «Prompt» и «Iterate».
+- Проверка только диагностирует: она не переписывает черновик, а цитата должна быть длиной 10–80 символов, поэтому в очень коротких черновиках может не найтись проблем с точной привязкой.
+- Свои шаблоны хранятся только в localStorage этого браузера; для переноса используйте JSON.
 - Нужна модель по умолчанию; панель сообщает об этом явно, а не падает молча.
 
 ## Разработка
@@ -181,15 +212,16 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 src/spec.js          template metadata and queries
 src/prompts.js       prompt construction per template
 src/placeholders.js  variable parsing, anchoring and application
+src/review.js        checkup parsing, validation and normalization
 src/catalog.js       model and template catalog
-src/index.js         host routes (models / optimize / variables)
+src/index.js         host routes (models / optimize / variables / review)
 src/web.js           client panel (React + theme tokens)
 test/                node:test unit tests
 ```
 
 - Тесты: `npm test`
 - ESM, без шага сборки, без JSX на клиенте; все цвета берутся из токенов `--dsw-alias-*`.
-- Маршруты хоста: `GET /prompt-optimize/models`, `POST /prompt-optimize/optimize` (NDJSON), `POST /prompt-optimize/variables`.
+- Маршруты хоста: `GET /prompt-optimize/models`, `POST /prompt-optimize/optimize` (NDJSON), `POST /prompt-optimize/variables`, `POST /prompt-optimize/review`.
 
 ## Лицензия
 

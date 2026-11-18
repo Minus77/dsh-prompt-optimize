@@ -31,7 +31,10 @@ La plupart des prompts qui « ne fonctionnent pas » ne relèvent pas d'un probl
 | Historique | Les 50 dernières exécutions, groupées en chaînes de versions, rejouer / comparer / supprimer |
 | Comparaison | Deux colonnes plus un résumé de structure local, au niveau des lignes |
 | Espaces réservés | Extraire jusqu'à 5 fragments réutilisables en variables `{{snake_case}}` |
-| Modèles | 7 modèles intégrés, groupés en basique / structure / exemples / raisonnement / itération |
+| Bilan | Note clarté, contexte, format, contraintes, exemples et robustesse, puis liste des corrections applicables en un clic |
+| Autre version | Garde le résultat précédent derrière une puce pour basculer entre deux versions |
+| Modèles | 15 intégrés, groupés en base / structure / exemples / raisonnement / ingénierie / rédaction / itération |
+| Modèles personnalisés | Écrivez votre propre consigne de réécriture, stockez-la dans ce navigateur, importez et exportez en JSON |
 | Modèle figé | Suivre le modèle de la session, ou en figer un pour ce panneau uniquement |
 | Interface bilingue (zh/en) | Suit automatiquement la langue de l'application |
 | Confidentialité | Historique désactivé par défaut ; s'il est activé, il reste dans `localStorage` |
@@ -54,8 +57,8 @@ Cette commande récupère le paquet publié ([npm](https://www.npmjs.com/package
 ```bash
 git clone https://github.com/Minus77/dsh-prompt-optimize.git
 cd dsh-prompt-optimize
-npm pack          # produces minus77-dsh-prompt-optimize-0.1.0.tgz
-dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.1.0.tgz
+npm pack          # produces minus77-dsh-prompt-optimize-0.2.0.tgz
+dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.2.0.tgz
 ```
 
 </details>
@@ -85,7 +88,7 @@ Redémarrez ce profil (`dsh --profile <profile>`) ; le bouton « Prompt optimize
 ### Développement local
 
 ```bash
-npm test                                   # 21 unit tests, no network
+npm test                                   # 32 unit tests, no network
 dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 ```
 
@@ -109,49 +112,41 @@ Après confirmation, le brouillon est remplacé et une barre d'annulation appara
 
 ![Annulation](./docs/screenshots/05-undo.png)
 
-### Espaces réservés
+### Bilan
 
-Cliquez sur le bouton d'accolades du résultat. Le modèle repère jusqu'à cinq fragments réutilisables et les réécrit en `{{variables}}` :
+Le bouton de bilan dans l'en-tête du résultat ne modifie jamais le brouillon. Il renvoie une note globale, six notes par dimension et jusqu'à cinq problèmes classés par gravité. Chaque problème cite le passage exact et propose un remplacement applicable sur place ; le reste du texte ne bouge pas.
 
-![Espaces réservés](./docs/screenshots/03-variables.png)
+![Bilan](./docs/screenshots/10-checkup.png)
 
-« Write back » place la version paramétrée dans la zone de saisie : réutiliser revient donc simplement à changer les valeurs.
+### Autre version
 
-### Itérer
+Le résultat ne convient pas ? Appuyez sur « Autre version » en bas. La version précédente passe derrière la puce « autre version » et les deux se basculent ; le nombre de caractères, la durée et les tokens suivent la version active.
 
-Passez sur « Iterate » et décrivez une modification, par exemple « allège le ton et condense la liste des éléments en attente en trois lignes ». Seuls les passages concernés bougent :
+![Autre version](./docs/screenshots/12-variants.png)
 
-![Itération](./docs/screenshots/08-iterate.png)
+### Modèles
 
-### Historique et comparaison
+Quinze modèles intégrés, groupés par intention. Les descriptions complètes sont dans [docs/TEMPLATES.fr.md](./docs/TEMPLATES.fr.md).
 
-Le bouton d'horloge ouvre l'historique. Chaque ligne indique la version, le modèle de prompt utilisé et l'écart de caractères, et se déplie pour copier, restaurer, comparer ou supprimer :
-
-![Historique](./docs/screenshots/06-history.png)
-
-![Comparaison](./docs/screenshots/07-compare.png)
-
-### Interface chinoise
-
-Avec une locale chinoise, le panneau, les modèles et les boutons sont également localisés :
-
-![Interface en chinois](./docs/screenshots/02-panel.png)
-
-## Modèles
-
-Sept modèles intégrés, groupés par intention. Les descriptions complètes se trouvent dans [docs/TEMPLATES.fr.md](./docs/TEMPLATES.fr.md).
-
-| Modèle | Mode | Groupe | Usage |
+| Modèle | Mode | Groupe | Pour |
 | --- | --- | --- | --- |
-| Task brief | Prompt | Basique | La plupart des brouillons « aide-moi à faire X » |
-| Delivery contract | Prompt | Structure | Travaux avec critères d'acceptation explicites |
+| Task brief | Prompt | Base | La plupart des brouillons « aide-moi à faire X » |
+| Delivery contract | Prompt | Structure | Travail avec critères d'acceptation explicites |
+| Structured extraction | Prompt | Structure | Extraire des champs fixes d'un matériau |
 | Worked examples | Prompt | Exemples | Style ou format fixé par des exemples |
-| Reasoning steps | Prompt | Raisonnement | Analyse en plusieurs étapes avec points de contrôle |
-| Role contract | System | Basique | Contraintes de rôle durables |
-| Agent persona | System | Basique | Voix et habitudes de jugement |
-| Incremental edit | Iterate | Itération | Petites modifications par-dessus une version existante |
+| Reasoning steps | Prompt | Raisonnement | Analyse en plusieurs étapes avec contrôles |
+| Grounded Q&A | Prompt | Raisonnement | Répondre depuis le matériau fourni, avec citations |
+| Code review | Prompt | Ingénierie | Une relecture cadrée et priorisée |
+| Implementation task | Prompt | Ingénierie | Travail de code avec acceptation et interfaces |
+| SQL query | Prompt | Ingénierie | Définition des métriques, champs et performance |
+| Test design | Prompt | Ingénierie | Cas normaux, limites, erreurs et permissions |
+| Translation | Prompt | Rédaction | Public, glossaire et format |
+| Copy polish | Prompt | Rédaction | Jusqu'où la retouche peut aller |
+| Role contract | System | Base | Contraintes de rôle durables |
+| Agent persona | System | Base | Voix et habitudes de jugement |
+| Incremental edit | Iterate | Itérer | Petites modifications sur une version |
 
-Les modèles se changent dans le panneau ; le pied de panneau propose alors « rerun with new template » au lieu d'écraser silencieusement le résultat courant.
+Les modèles se changent dans le panneau ; le pied de page propose alors « rerun with new template » au lieu d'écraser le résultat en silence. Le même menu permet de créer un modèle personnalisé et de l'importer ou l'exporter en JSON.
 
 ## Raccourcis
 
@@ -173,6 +168,8 @@ Les modèles se changent dans le panneau ; le pied de panneau propose alors « r
 - Texte uniquement : les pièces jointes image ne sont pas encore acceptées comme entrée de réécriture.
 - 60 000 caractères par brouillon ; au maximum 5 variables extraites.
 - Les modèles de type system prompt existent dans l'API, mais le panneau n'expose que Prompt et Iterate.
+- Le bilan ne fait que diagnostiquer : il ne réécrit pas le brouillon, et un passage doit faire 10 à 80 caractères pour être cité ; les brouillons très courts peuvent donc ne rien proposer.
+- Les modèles personnalisés restent dans le localStorage de ce navigateur ; utilisez JSON pour les déplacer.
 - Un modèle par défaut est requis ; le panneau l'indique clairement au lieu d'échouer en silence.
 
 ## Développement
@@ -181,15 +178,16 @@ Les modèles se changent dans le panneau ; le pied de panneau propose alors « r
 src/spec.js          template metadata and queries
 src/prompts.js       prompt construction per template
 src/placeholders.js  variable parsing, anchoring and application
+src/review.js        checkup parsing, validation and normalization
 src/catalog.js       model and template catalog
-src/index.js         host routes (models / optimize / variables)
+src/index.js         host routes (models / optimize / variables / review)
 src/web.js           client panel (React + theme tokens)
 test/                node:test unit tests
 ```
 
 - Tests : `npm test`
 - ESM, aucune étape de build, pas de JSX côté client ; toutes les couleurs viennent des tokens `--dsw-alias-*`.
-- Routes côté hôte : `GET /prompt-optimize/models`, `POST /prompt-optimize/optimize` (NDJSON), `POST /prompt-optimize/variables`.
+- Routes côté hôte : `GET /prompt-optimize/models`, `POST /prompt-optimize/optimize` (NDJSON), `POST /prompt-optimize/variables`, `POST /prompt-optimize/review`.
 
 ## Licence
 

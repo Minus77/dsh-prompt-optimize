@@ -4,7 +4,7 @@
 
 [中文](./README.md) · [English](./README_en.md) · [Español](./README_es.md) · [Français](./README_fr.md) · **Deutsch** · [Русский](./README_ru.md) · [日本語](./README_ja.md)
 
-Ein Plugin für DeepSeek Harness, das den groben Entwurf in deinem Eingabefeld zu einem Prompt macht, mit dem du tatsächlich arbeiten kannst. Bevor etwas ersetzt wird, prüfst du einen zeilenweisen Diff; danach hast du neun Sekunden Zeit für ein Undo, und das Plugin führt eine lokale Historie mit Versionsvergleich und eine Bibliothek wiederverwendbarer Vorlagen.
+Ein Plugin für DeepSeek Harness, das den groben Entwurf in deinem Eingabefeld zu einem Prompt macht, mit dem du tatsächlich arbeiten kannst. Bevor etwas ersetzt wird, prüfst du einen zeilenweisen Diff; danach hast du neun Sekunden Zeit für ein Undo, und das Plugin führt eine lokale Historie mit Versionsvergleich, bewertet das Ergebnis, hält eine zweite Fassung bereit und bringt 15 integrierte Vorlagen plus deine eigenen mit.
 
 Welche Vorlage du wählst und wofür jede gedacht ist: siehe [Vorlagenanleitung](./docs/TEMPLATES.de.md).
 
@@ -31,7 +31,10 @@ Die meisten Prompts, die „nicht funktionieren“, sind kein Modellproblem, son
 | Historie | Die letzten 50 Durchläufe, zu Versionsketten gruppiert, wiederherstellen / vergleichen / löschen |
 | Vergleich | Zwei Spalten plus eine lokale Zusammenfassung der Struktur auf Zeilenebene |
 | Platzhalter | Bis zu 5 wiederverwendbare Fragmente als `{{snake_case}}`-Variablen extrahieren |
-| Vorlagen | 7 integrierte Vorlagen, gruppiert als Basic / Structure / Examples / Reasoning / Iterate |
+| Prüfung | Bewertet Klarheit, Kontext, Format, Vorgaben, Beispiele und Robustheit und listet Korrekturen, die du mit einem Klick anwendest |
+| Zweite Fassung | Hält das vorherige Ergebnis hinter einem Chip, damit du zwischen zwei Fassungen wechseln kannst |
+| Vorlagen | 15 integrierte, gruppiert als Basis / Struktur / Beispiele / Denken / Engineering / Text / Iterieren |
+| Eigene Vorlagen | Schreibe deine eigene Umschreib-Anweisung, speichere sie in diesem Browser, importiere und exportiere sie als JSON |
 | Modell festlegen | Dem Sitzungsmodell folgen oder eines nur für dieses Panel festlegen |
 | Zweisprachige UI (zh/en) | Folgt automatisch der Sprache der App |
 | Datenschutz | Historie standardmäßig aus; wenn aktiviert, bleibt sie in `localStorage` |
@@ -54,8 +57,8 @@ Damit wird das veröffentlichte Paket installiert ([npm](https://www.npmjs.com/p
 ```bash
 git clone https://github.com/Minus77/dsh-prompt-optimize.git
 cd dsh-prompt-optimize
-npm pack          # produces minus77-dsh-prompt-optimize-0.1.0.tgz
-dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.1.0.tgz
+npm pack          # produces minus77-dsh-prompt-optimize-0.2.0.tgz
+dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.2.0.tgz
 ```
 
 </details>
@@ -85,7 +88,7 @@ Starte das Profil neu (`dsh --profile <profile>`); rechts am Eingabefeld erschei
 ### Lokale Entwicklung
 
 ```bash
-npm test                                   # 21 unit tests, no network
+npm test                                   # 32 unit tests, no network
 dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 ```
 
@@ -108,6 +111,24 @@ Wenn der Stream endet, klicke auf „Replace draft“, um zuerst den Diff zu seh
 Nach der Bestätigung wird der Entwurf ersetzt und neun Sekunden lang erscheint eine Undo-Leiste:
 
 ![Undo](./docs/screenshots/05-undo.png)
+
+### Prüfung
+
+Der Prüfbutton im Kopf des Ergebnisses ändert den Entwurf nie. Er liefert eine Gesamtnote, sechs Teilnoten und bis zu fünf nach Schwere sortierte Probleme. Jedes Problem zitiert die genaue Stelle und bietet einen Ersatz, den du direkt anwendest; der übrige Text bleibt unverändert.
+
+![Prüfung](./docs/screenshots/10-checkup.png)
+
+### Zweite Fassung
+
+Das Ergebnis überzeugt nicht? Drücke unten auf „Zweite Fassung“. Die vorherige Fassung wandert hinter den Chip, und du kannst zwischen beiden wechseln; Zeichenzahl, Dauer und Token-Verbrauch folgen der aktiven Fassung.
+
+![Zweite Fassung](./docs/screenshots/12-variants.png)
+
+### Eigene Vorlagen
+
+Der letzte Eintrag im Vorlagenmenü ist „Neue eigene Vorlage“: Name, Umschreib-Anweisung und Zielgruppe eintragen. Danach erscheint sie neben den integrierten. Eigene Vorlagen liegen nur im localStorage dieses Browsers; für den Umzug auf einen anderen Rechner dienen JSON-Import und -Export.
+
+![Eigene Vorlage](./docs/screenshots/11-custom-template.png)
 
 ### Platzhalter
 
@@ -139,19 +160,27 @@ Bei chinesischer Oberflächensprache sind dasselbe Panel, dieselben Vorlagen und
 
 ## Vorlagen
 
-Sieben integrierte Vorlagen, nach Zweck gruppiert. Die vollständigen Beschreibungen stehen in [docs/TEMPLATES.de.md](./docs/TEMPLATES.de.md).
+Fünfzehn integrierte Vorlagen, nach Zweck gruppiert. Die vollständigen Beschreibungen stehen in [docs/TEMPLATES.de.md](./docs/TEMPLATES.de.md).
 
 | Vorlage | Modus | Gruppe | Geeignet für |
 | --- | --- | --- | --- |
-| Task brief | Prompt | Basic | Die meisten Entwürfe der Art „hilf mir, X zu machen“ |
-| Delivery contract | Prompt | Structure | Arbeit mit expliziten Abnahmekriterien |
-| Worked examples | Prompt | Examples | Stil oder Format, das durch Beispiele festgelegt wird |
-| Reasoning steps | Prompt | Reasoning | Mehrstufige Analyse mit Zwischenprüfungen |
-| Role contract | System | Basic | Langlebige Rollenvorgaben |
-| Agent persona | System | Basic | Tonfall und Urteilsgewohnheiten |
-| Incremental edit | Iterate | Iterate | Kleine Änderungen auf einer bestehenden Version |
+| Task brief | Prompt | Basis | Die meisten Entwürfe der Art „hilf mir, X zu machen“ |
+| Delivery contract | Prompt | Struktur | Arbeit mit expliziten Abnahmekriterien |
+| Structured extraction | Prompt | Struktur | Feste Felder verlässlich aus Material ziehen |
+| Worked examples | Prompt | Beispiele | Stil oder Format, das durch Beispiele festgelegt wird |
+| Reasoning steps | Prompt | Denken | Mehrstufige Analyse mit Zwischenprüfungen |
+| Grounded Q&A | Prompt | Denken | Aus dem Material antworten, mit Belegen |
+| Code review | Prompt | Engineering | Eine abgegrenzte, priorisierte Durchsicht |
+| Implementation task | Prompt | Engineering | Codearbeit mit Abnahme, Schnittstellen und Randfällen |
+| SQL query | Prompt | Engineering | Kennzahlen, Felder und Leistungsgrenzen |
+| Test design | Prompt | Engineering | Fälle für Normalfall, Grenze, Fehler und Rechte |
+| Translation | Prompt | Text | Zielgruppe, Glossar und Format |
+| Copy polish | Prompt | Text | Wie weit die Überarbeitung gehen darf |
+| Role contract | System | Basis | Langlebige Rollenvorgaben |
+| Agent persona | System | Basis | Tonfall und Urteilsgewohnheiten |
+| Incremental edit | Iterate | Iterieren | Kleine Änderungen auf einer bestehenden Version |
 
-Vorlagen lassen sich im Panel wechseln; die Fußzeile bietet dann „rerun with new template“ an, statt das aktuelle Ergebnis still zu überschreiben.
+Vorlagen lassen sich im Panel wechseln; die Fußzeile bietet dann „rerun with new template“ an, statt das aktuelle Ergebnis still zu überschreiben. Dasselbe Menü erlaubt eigene Vorlagen sowie JSON-Import und -Export.
 
 ## Tastenkürzel
 
@@ -173,6 +202,8 @@ Vorlagen lassen sich im Panel wechseln; die Fußzeile bietet dann „rerun with 
 - Nur Text: Bildanhänge werden noch nicht als Eingabe für das Umschreiben akzeptiert.
 - 60.000 Zeichen pro Entwurf; höchstens 5 extrahierte Variablen.
 - Vorlagen für System-Prompts gibt es in der API, das Panel zeigt aber nur Prompt und Iterate.
+- Die Prüfung diagnostiziert nur: Sie schreibt den Entwurf nicht neu, und ein Zitat muss 10–80 Zeichen lang sein, daher können sehr kurze Entwürfe keine auffindbaren Probleme liefern.
+- Eigene Vorlagen bleiben im localStorage dieses Browsers; für den Umzug JSON verwenden.
 - Ein Standardmodell ist erforderlich; das Panel meldet das klar, statt still zu scheitern.
 
 ## Entwicklung
@@ -181,15 +212,16 @@ Vorlagen lassen sich im Panel wechseln; die Fußzeile bietet dann „rerun with 
 src/spec.js          template metadata and queries
 src/prompts.js       prompt construction per template
 src/placeholders.js  variable parsing, anchoring and application
+src/review.js        checkup parsing, validation and normalization
 src/catalog.js       model and template catalog
-src/index.js         host routes (models / optimize / variables)
+src/index.js         host routes (models / optimize / variables / review)
 src/web.js           client panel (React + theme tokens)
 test/                node:test unit tests
 ```
 
 - Tests: `npm test`
 - ESM, kein Build-Schritt, kein JSX im Client; alle Farben stammen aus `--dsw-alias-*`-Tokens.
-- Host-Routen: `GET /prompt-optimize/models`, `POST /prompt-optimize/optimize` (NDJSON), `POST /prompt-optimize/variables`.
+- Host-Routen: `GET /prompt-optimize/models`, `POST /prompt-optimize/optimize` (NDJSON), `POST /prompt-optimize/variables`, `POST /prompt-optimize/review`.
 
 ## Lizenz
 

@@ -4,7 +4,7 @@
 
 [中文](./README.md) · [English](./README_en.md) · **Español** · [Français](./README_fr.md) · [Deutsch](./README_de.md) · [Русский](./README_ru.md) · [日本語](./README_ja.md)
 
-Un plugin de DeepSeek Harness que convierte el borrador aproximado de tu compositor en un prompt que de verdad puedes usar. Revisas un diff línea a línea antes de que sustituya nada, puedes deshacer durante nueve segundos después, y guarda un historial local con comparación de versiones y una biblioteca de plantillas reutilizables.
+Un plugin de DeepSeek Harness que convierte el borrador aproximado de tu compositor en un prompt que de verdad puedes usar. Revisas un diff línea a línea antes de que sustituya nada, puedes deshacer durante nueve segundos después, y guarda un historial local con comparación de versiones, puntúa el resultado, conserva una segunda versión y trae 15 plantillas integradas más las tuyas.
 
 Para saber qué plantilla elegir y para qué sirve cada una, consulta la [guía de plantillas](./docs/TEMPLATES.es.md).
 
@@ -31,7 +31,10 @@ La mayoría de los prompts que “no funcionan” no son un problema del modelo,
 | Historial | Últimas 50 ejecuciones, agrupadas en cadenas de versiones; reproducir / comparar / borrar |
 | Comparar | Dos columnas y un resumen local de la estructura a nivel de línea |
 | Marcadores | Extrae hasta 5 fragmentos reutilizables como variables `{{snake_case}}` |
-| Plantillas | 7 integradas, agrupadas como básicas / estructura / ejemplos / razonamiento / iteración |
+| Revisión | Puntúa claridad, contexto, formato, restricciones, ejemplos y robustez, y lista correcciones aplicables con un clic |
+| Otra versión | Guarda el resultado anterior detrás de una pestaña para alternar entre dos versiones |
+| Plantillas | 15 integradas, agrupadas como básicas / estructura / ejemplos / razonamiento / ingeniería / redacción / iteración |
+| Plantillas propias | Escribe tu propia instrucción de reescritura, guárdala en este navegador e impórtala o expórtala en JSON |
 | Fijar modelo | Sigue el modelo de la sesión o fija uno solo para este panel |
 | Interfaz bilingüe (zh/en) | Sigue el idioma de la aplicación automáticamente |
 | Privacidad | Historial desactivado por defecto; si se activa, se queda en `localStorage` |
@@ -54,8 +57,8 @@ Eso descarga el paquete publicado ([npm](https://www.npmjs.com/package/@minus77/
 ```bash
 git clone https://github.com/Minus77/dsh-prompt-optimize.git
 cd dsh-prompt-optimize
-npm pack          # produces minus77-dsh-prompt-optimize-0.1.0.tgz
-dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.1.0.tgz
+npm pack          # produces minus77-dsh-prompt-optimize-0.2.0.tgz
+dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.2.0.tgz
 ```
 
 </details>
@@ -85,7 +88,7 @@ Reinicia ese perfil (`dsh --profile <profile>`); el botón “Prompt optimizer�
 ### Desarrollo local
 
 ```bash
-npm test                                   # 21 unit tests, no network
+npm test                                   # 32 unit tests, no network
 dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 ```
 
@@ -109,49 +112,41 @@ Al confirmar, el borrador se sustituye y aparece una barra de deshacer durante n
 
 ![Deshacer](./docs/screenshots/05-undo.png)
 
-### Marcadores
+### Revisión
 
-Pulsa el botón de llaves sobre el resultado. El modelo encuentra hasta cinco fragmentos reutilizables y los reescribe como `{{variables}}`:
+El botón de revisión de la cabecera del resultado nunca edita el borrador. Devuelve una puntuación total, seis puntuaciones por dimensión y hasta cinco problemas ordenados por gravedad. Cada problema cita el fragmento exacto y ofrece un reemplazo que puedes aplicar en el sitio; el resto del texto no se toca.
 
-![Marcadores](./docs/screenshots/03-variables.png)
+![Revisión](./docs/screenshots/10-checkup.png)
 
-El botón “Write back” lleva la versión parametrizada al compositor, así que reutilizar solo implica cambiar valores.
+### Otra versión
 
-### Iterate
+¿No te convence el resultado? Pulsa "Otra versión" en el pie. La versión anterior pasa detrás de la pestaña "otra versión" y puedes alternar entre ambas; el recuento de caracteres, el tiempo y el uso de tokens siguen a la versión activa.
 
-Cambia a “Iterate” y describe un solo cambio, por ejemplo “haz el tono más ligero y reduce la lista de pendientes a tres líneas”. Solo se mueven los pasajes relevantes:
+![Otra versión](./docs/screenshots/12-variants.png)
 
-![Iterar](./docs/screenshots/08-iterate.png)
+### Plantillas
 
-### Historial y comparación
+Quince plantillas integradas, agrupadas por intención. Las descripciones completas están en [docs/TEMPLATES.es.md](./docs/TEMPLATES.es.md).
 
-El botón del reloj abre el historial. Cada fila muestra la versión, la plantilla y la diferencia de caracteres, y se despliega para copiar, restaurar, comparar o borrar:
-
-![Historial](./docs/screenshots/06-history.png)
-
-![Comparación](./docs/screenshots/07-compare.png)
-
-### Interfaz en chino
-
-Con una configuración regional china, el mismo panel, las plantillas y los botones aparecen traducidos:
-
-![Interfaz en chino](./docs/screenshots/02-panel.png)
-
-## Plantillas
-
-Siete plantillas integradas, agrupadas por intención. Las descripciones completas están en [docs/TEMPLATES.es.md](./docs/TEMPLATES.es.md).
-
-| Plantilla | Modo | Grupo | Úsala para |
+| Plantilla | Modo | Grupo | Sirve para |
 | --- | --- | --- | --- |
-| Task brief | Prompt | Básica | La mayoría de borradores del tipo “ayúdame con X” |
+| Task brief | Prompt | Básico | La mayoría de borradores del tipo "ayúdame con X" |
 | Delivery contract | Prompt | Estructura | Trabajo con criterios de aceptación explícitos |
-| Worked examples | Prompt | Ejemplos | Estilo o formato fijado con muestras |
-| Reasoning steps | Prompt | Razonamiento | Análisis de varios pasos con puntos de control |
-| Role contract | System | Básica | Restricciones de rol que duran mucho tiempo |
-| Agent persona | System | Básica | Voz y hábitos de criterio |
-| Incremental edit | Iterate | Iteración | Cambios pequeños sobre una versión |
+| Structured extraction | Prompt | Estructura | Sacar campos fijos de un material |
+| Worked examples | Prompt | Ejemplos | Estilo o formato fijado por ejemplos |
+| Reasoning steps | Prompt | Razonamiento | Análisis en varios pasos con controles |
+| Grounded Q&A | Prompt | Razonamiento | Responder desde el material, con citas |
+| Code review | Prompt | Ingeniería | Una revisión acotada y priorizada |
+| Implementation task | Prompt | Ingeniería | Trabajo de código con aceptación e interfaces |
+| SQL query | Prompt | Ingeniería | Definición de métricas, campos y rendimiento |
+| Test design | Prompt | Ingeniería | Casos normales, límite, error y permisos |
+| Translation | Prompt | Redacción | Audiencia, glosario y formato |
+| Copy polish | Prompt | Redacción | Hasta dónde puede llegar la edición |
+| Role contract | System | Básico | Restricciones de rol de larga duración |
+| Agent persona | System | Básico | Voz y hábitos de criterio |
+| Incremental edit | Iterate | Iterar | Cambios pequeños sobre una versión |
 
-Las plantillas se pueden cambiar dentro del panel; el pie ofrece entonces “rerun with new template” en lugar de sobrescribir en silencio el resultado actual.
+Las plantillas se cambian dentro del panel; el pie ofrece entonces "rerun with new template" en lugar de sobrescribir el resultado en silencio. El mismo menú permite crear una plantilla propia e importarla o exportarla en JSON.
 
 ## Atajos
 
@@ -173,6 +168,8 @@ Las plantillas se pueden cambiar dentro del panel; el pie ofrece entonces “rer
 - Solo texto: de momento no se aceptan imágenes adjuntas como entrada para reescribir.
 - 60.000 caracteres por borrador; como máximo 5 variables extraídas.
 - Las plantillas de system prompt existen en la API, pero el panel solo expone Prompt e Iterate.
+- La revisión solo diagnostica: no reescribe el borrador, y un fragmento debe tener entre 10 y 80 caracteres para citarse, así que los borradores muy cortos pueden no dar problemas localizables.
+- Las plantillas propias se quedan en el localStorage de este navegador; usa JSON para moverlas.
 - Se necesita un modelo por defecto; el panel lo indica con claridad en lugar de fallar en silencio.
 
 ## Desarrollo
@@ -181,15 +178,16 @@ Las plantillas se pueden cambiar dentro del panel; el pie ofrece entonces “rer
 src/spec.js          template metadata and queries
 src/prompts.js       prompt construction per template
 src/placeholders.js  variable parsing, anchoring and application
+src/review.js        checkup parsing, validation and normalization
 src/catalog.js       model and template catalog
-src/index.js         host routes (models / optimize / variables)
+src/index.js         host routes (models / optimize / variables / review)
 src/web.js           client panel (React + theme tokens)
 test/                node:test unit tests
 ```
 
 - Pruebas: `npm test`
 - ESM, sin paso de compilación y sin JSX en el cliente; todos los colores vienen de los tokens `--dsw-alias-*`.
-- Rutas del host: `GET /prompt-optimize/models`, `POST /prompt-optimize/optimize` (NDJSON), `POST /prompt-optimize/variables`.
+- Rutas del host: `GET /prompt-optimize/models`, `POST /prompt-optimize/optimize` (NDJSON), `POST /prompt-optimize/variables`, `POST /prompt-optimize/review`.
 
 ## Licencia
 

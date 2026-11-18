@@ -4,7 +4,7 @@
 
 [中文](./README.md) · **English** · [Español](./README_es.md) · [Français](./README_fr.md) · [Deutsch](./README_de.md) · [Русский](./README_ru.md) · [日本語](./README_ja.md)
 
-A DeepSeek Harness plugin that turns the rough draft in your composer into a prompt you can actually use. You review a line-by-line diff before it replaces anything, you can undo for nine seconds afterwards, and it keeps a local history with version compare and a library of reusable templates.
+A DeepSeek Harness plugin that turns the rough draft in your composer into a prompt you can actually use. You review a line-by-line diff before it replaces anything, you can undo for nine seconds afterwards, and it keeps a local history with version compare, scores the result, keeps a second take, and ships 15 built-in templates plus your own.
 
 Which template to pick, and what each one is for: see [the template guide](./docs/TEMPLATES.en.md).
 
@@ -31,7 +31,10 @@ Most prompts that "don't work" are not a model problem — they are a draft prob
 | History | Last 50 runs, grouped into version chains, replay / compare / delete |
 | Compare | Two columns plus a local, line-level structure summary |
 | Placeholders | Extract up to 5 reusable fragments into `{{snake_case}}` variables |
-| Templates | 7 built-ins grouped as basic / structure / examples / reasoning / iterate |
+| Checkup | Scores clarity, context, format, constraints, examples and robustness, then lists fixes you can apply in one click |
+| Another take | Keeps the previous result behind a chip so you can flip between two versions |
+| Templates | 15 built-ins grouped as basic / structure / examples / reasoning / engineering / writing / iterate |
+| Custom templates | Write your own rewrite instruction, save it in this browser, import and export as JSON |
 | Model pin | Follow the session model, or pin one for this panel only |
 | Bilingual UI (zh/en) | Follows the app locale automatically |
 | Privacy | History off by default; when on, it stays in `localStorage` |
@@ -54,8 +57,8 @@ That pulls the published package ([npm](https://www.npmjs.com/package/@minus77/d
 ```bash
 git clone https://github.com/Minus77/dsh-prompt-optimize.git
 cd dsh-prompt-optimize
-npm pack          # produces minus77-dsh-prompt-optimize-0.1.0.tgz
-dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.1.0.tgz
+npm pack          # produces minus77-dsh-prompt-optimize-0.2.0.tgz
+dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.2.0.tgz
 ```
 
 </details>
@@ -109,6 +112,24 @@ After confirming, the draft is replaced and an undo bar appears for nine seconds
 
 ![Undo](./docs/screenshots/05-undo.png)
 
+### Checkup
+
+The checkup button in the result header never edits the draft. It reports a total score, six dimension scores, and up to five issues ordered by severity. Each issue quotes the exact span and offers a replacement you can apply in place; the rest of the text stays untouched.
+
+![Checkup](./docs/screenshots/10-checkup.png)
+
+### Another take
+
+Not happy with a result? Press "Another take" in the footer. The previous version moves behind the "another take" chip, and the two can be flipped back and forth; character count, elapsed time and token usage follow the active version.
+
+![Another take](./docs/screenshots/12-variants.png)
+
+### Custom templates
+
+The last item in the template menu is "New custom template": give it a name, a rewrite instruction and who it is for. It then shows up next to the built-ins. Custom templates live in this browser's localStorage only — use JSON import/export to move them between machines.
+
+![Custom template](./docs/screenshots/11-custom-template.png)
+
 ### Placeholders
 
 Click the braces button on the result. The model finds up to five reusable fragments and rewrites them as `{{variables}}`:
@@ -139,19 +160,27 @@ With a Chinese locale the same panel, templates and buttons are localized:
 
 ## Templates
 
-Seven built-ins, grouped by intent. Full descriptions live in [docs/TEMPLATES.en.md](./docs/TEMPLATES.en.md).
+Fifteen built-ins, grouped by intent. Full descriptions live in [docs/TEMPLATES.en.md](./docs/TEMPLATES.en.md).
 
 | Template | Mode | Group | Use for |
 | --- | --- | --- | --- |
 | Task brief | Prompt | Basic | Most "help me do X" drafts |
 | Delivery contract | Prompt | Structure | Work with explicit acceptance criteria |
+| Structured extraction | Prompt | Structure | Pull fixed fields out of material reliably |
 | Worked examples | Prompt | Examples | Style or format pinned by samples |
 | Reasoning steps | Prompt | Reasoning | Multi-step analysis with checkpoints |
+| Grounded Q&A | Prompt | Reasoning | Answer from provided material, with citations |
+| Code review | Prompt | Engineering | A scoped, prioritized review request |
+| Implementation task | Prompt | Engineering | Coding work with acceptance, interfaces and edge cases |
+| SQL query | Prompt | Engineering | Metric definitions, fields and performance limits |
+| Test design | Prompt | Engineering | Cases covering normal, boundary, failure and permissions |
+| Translation | Prompt | Writing | Audience, glossary and formatting rules |
+| Copy polish | Prompt | Writing | How far edits may go, and no invented content |
 | Role contract | System | Basic | Long-lived role constraints |
 | Agent persona | System | Basic | Voice and judgment habits |
 | Incremental edit | Iterate | Iterate | Small changes on top of a version |
 
-Templates can be switched inside the panel; the footer then offers "rerun with new template" instead of silently overwriting the current result.
+Templates can be switched inside the panel; the footer then offers "rerun with new template" instead of silently overwriting the current result. The same menu also lets you create a custom template and import or export it as JSON.
 
 ## Shortcuts
 
@@ -173,6 +202,8 @@ Templates can be switched inside the panel; the footer then offers "rerun with n
 - Text only: image attachments are not accepted as rewrite input yet.
 - 60,000 characters per draft; at most 5 extracted variables.
 - System-prompt templates exist in the API but the panel exposes only Prompt and Iterate.
+- Checkup only diagnoses: it never rewrites the whole draft, and a span must be 10–80 characters to be quoted, so very short drafts may yield no locatable issues.
+- Custom templates stay in this browser's localStorage; use JSON import/export to move them.
 - A default model is required; the panel reports it clearly instead of failing silently.
 
 ## Development
@@ -181,15 +212,16 @@ Templates can be switched inside the panel; the footer then offers "rerun with n
 src/spec.js          template metadata and queries
 src/prompts.js       prompt construction per template
 src/placeholders.js  variable parsing, anchoring and application
+src/review.js        checkup parsing, validation and normalization
 src/catalog.js       model and template catalog
-src/index.js         host routes (models / optimize / variables)
+src/index.js         host routes (models / optimize / variables / review)
 src/web.js           client panel (React + theme tokens)
 test/                node:test unit tests
 ```
 
 - Tests: `npm test`
 - ESM, no build step, no JSX on the client; all colors come from `--dsw-alias-*` tokens.
-- Host routes: `GET /prompt-optimize/models`, `POST /prompt-optimize/optimize` (NDJSON), `POST /prompt-optimize/variables`.
+- Host routes: `GET /prompt-optimize/models`, `POST /prompt-optimize/optimize` (NDJSON), `POST /prompt-optimize/variables`, `POST /prompt-optimize/review`.
 
 ## License
 

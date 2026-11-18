@@ -4,7 +4,7 @@
 
 **中文** · [English](./README_en.md) · [Español](./README_es.md) · [Français](./README_fr.md) · [Deutsch](./README_de.md) · [Русский](./README_ru.md) · [日本語](./README_ja.md)
 
-一个 DeepSeek Harness 插件：把输入框里的草稿改写成可直接使用的提示词。替换前先看逐行 diff，替换后 9 秒内可撤销；带本地历史、版本对比和一套可复用的模板。
+一个 DeepSeek Harness 插件：把输入框里的草稿改写成可直接使用的提示词。替换前先看逐行 diff，替换后 9 秒内可撤销；改完还能体检打分、换一版对比；带本地历史、15 个内置模板和自定义模板。
 
 模板怎么选、每个模板适合什么场景：见 [模板说明](./docs/TEMPLATES.md)。
 
@@ -31,7 +31,10 @@
 | 版本历史 | 本机保存最近 50 条，按版本链组织，可回写、对比、删除 |
 | 版本对比 | 两栏对照原稿与结果，并给出行级结构变化统计 |
 | 参数化 | 从结果中抽取可替换片段（最多 5 个），一键写成 `{{变量}}` |
-| 模板库 | 7 个内置模板，按“基础 / 结构 / 示范 / 推理 / 迭代”分组 |
+| 提示词体检 | 从清晰度、上下文、输出格式、约束、示例、鲁棒性六个维度打分，逐条给可直接应用的替换建议 |
+| 另一版 | 保留上一版结果，一键切换对比，不满意再生成 |
+| 模板库 | 15 个内置模板，按“基础 / 结构 / 示范 / 推理 / 工程 / 写作 / 迭代”分组 |
+| 自定义模板 | 在面板里写自己的改写要求，保存到本机，支持 JSON 导入导出 |
 | 模型固定 | 默认跟随当前模型，也可在面板里指定某个模型 |
 | 中英双语界面 | 跟随界面语言自动切换（当前内置中文与英文），无需单独设置 |
 | 隐私优先 | 历史默认不开启，开启后只写本机 localStorage |
@@ -54,8 +57,8 @@ dsh plugin --profile web add @minus77/dsh-prompt-optimize
 ```bash
 git clone https://github.com/Minus77/dsh-prompt-optimize.git
 cd dsh-prompt-optimize
-npm pack          # 生成 minus77-dsh-prompt-optimize-0.1.0.tgz
-dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.1.0.tgz
+npm pack          # 生成 minus77-dsh-prompt-optimize-0.2.0.tgz
+dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.2.0.tgz
 ```
 
 </details>
@@ -85,7 +88,7 @@ dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.1.0.tgz
 ### 本地开发
 
 ```bash
-npm test                                   # 21 个单元测试，无需网络
+npm test                                   # 32 个单元测试，无需网络
 dsh plugin --profile dev add file:$PWD     # 软链当前目录，改完重启即可
 ```
 
@@ -109,6 +112,18 @@ dsh plugin --profile dev add file:$PWD     # 软链当前目录，改完重启�
 
 ![撤销](./docs/screenshots/05-undo.png)
 
+### 体检
+
+结果卡右上角的“体检”按钮不会改动草稿，只做诊断：给总分和六个维度的分数，再按严重度列出最多 5 条问题。每条问题都引用原文片段，并给出一句可直接替换的修订文本；点“应用”就地把那一处换掉，其余文字保持不动。
+
+![体检](./docs/screenshots/10-checkup.png)
+
+### 另一版
+
+对结果不满意时点底部的“再来一版”，上一版会收进“另一版”标签页，当前版本与旧版本可以来回切换；切换时字数、耗时和 token 用量一起跟着变。
+
+![另一版](./docs/screenshots/12-variants.png)
+
 ### 参数化片段
 
 点结果右上角的变量按钮，模型会从结果里找出最多 5 个值得复用的片段，写成 `{{中文或英文名}}`：
@@ -131,6 +146,12 @@ dsh plugin --profile dev add file:$PWD     # 软链当前目录，改完重启�
 
 ![版本对比](./docs/screenshots/07-compare.png)
 
+### 自定义模板
+
+模板菜单的最后一项是“新建自定义模板”：填名称、改写要求和适用对象即可保存，之后和其他模板一样出现在菜单里。自定义模板只存在这台浏览器的 localStorage，不会上传；可以用 JSON 导入导出，换机器时带走。
+
+![自定义模板](./docs/screenshots/11-custom-template.png)
+
 ### English UI
 
 界面语言为英文时，插件文案、模板名和按钮全部切换：
@@ -139,19 +160,27 @@ dsh plugin --profile dev add file:$PWD     # 软链当前目录，改完重启�
 
 ## 模板
 
-内置 7 个模板，按用途分组。完整说明（适用场景、结构、示例）见 [docs/TEMPLATES.md](./docs/TEMPLATES.md)。
+内置 15 个模板，按用途分组。完整说明（适用场景、结构、示例）见 [docs/TEMPLATES.md](./docs/TEMPLATES.md)。
 
 | 模板 | 模式 | 分组 | 适合 |
 | --- | --- | --- | --- |
 | 任务简报 Task brief | 提示词 | 基础 | 大多数“帮我做点什么” |
 | 交付契约 Delivery contract | 提示词 | 结构 | 有明确验收标准的任务 |
+| 结构化抽取 Structured extraction | 提示词 | 结构 | 从材料里稳定取出固定字段 |
 | 示例引导 Worked examples | 提示词 | 示范 | 风格或格式需要靠样例锁定 |
 | 推理步骤 Reasoning steps | 提示词 | 推理 | 多步分析、需要中间检查 |
+| 资料问答 Grounded Q&A | 提示词 | 推理 | 基于给定资料回答并要求引用 |
+| 代码审阅 Code review | 提示词 | 工程 | 有范围、有优先级的审阅请求 |
+| 实现任务 Implementation task | 提示词 | 工程 | 带验收、接口与边界处理的编码说明 |
+| SQL 查询 SQL query | 提示词 | 工程 | 口径、字段和性能约束都要写清 |
+| 测试设计 Test design | 提示词 | 工程 | 覆盖正常、边界、异常与权限的用例 |
+| 翻译本地化 Translation | 提示词 | 写作 | 带受众、术语表与格式要求 |
+| 写作润色 Copy polish | 提示词 | 写作 | 允许改到哪一层、禁止扩写 |
 | 角色设定 Role contract | 系统提示词 | 基础 | 长期使用的角色约束 |
 | Agent 人设 Agent persona | 系统提示词 | 基础 | 说话方式与判断习惯 |
 | 增量改写 Incremental edit | 迭代 | 迭代 | 在上一版上小改 |
 
-面板内可直接切换模板；切换后底部会出现“用新模板重跑”，不会悄悄覆盖当前结果。
+面板内可直接切换模板；切换后底部会出现“用新模板重跑”，不会悄悄覆盖当前结果。模板菜单里还能新建自定义模板，并导入导出为 JSON。
 
 ## 快捷键
 
@@ -173,6 +202,8 @@ dsh plugin --profile dev add file:$PWD     # 软链当前目录，改完重启�
 - 只处理文字：暂不支持把图片附件作为改写输入。
 - 单次草稿上限 60,000 字符，抽取变量最多 5 个。
 - 系统提示词类模板目前只能通过内置 API 使用，界面只暴露“提示词 / 迭代”两档。
+- 体检只给诊断和替换建议，不会自动重写整段草稿；问题引用要求原文连续 10–80 字，过短的草稿可能挑不出可定位的问题。
+- 自定义模板只保存在本机浏览器（localStorage），不会跨设备同步；换机器请用 JSON 导入导出。
 - 需要一个可用的默认模型；没有可用模型时面板会给出明确提示，而不是静默失败。
 
 ## 开发
@@ -181,15 +212,16 @@ dsh plugin --profile dev add file:$PWD     # 软链当前目录，改完重启�
 src/spec.js          模板元数据与查询
 src/prompts.js       各模板的提示词构造
 src/placeholders.js  变量解析、定位与套用
+src/review.js        体检结果的解析、校验与归一化
 src/catalog.js       模型与模板目录
-src/index.js         宿主端路由（models / optimize / variables）
+src/index.js         宿主端路由（models / optimize / variables / review）
 src/web.js           客户端面板（React + 主题 token）
 test/                node:test 单元测试
 ```
 
 - 测试：`npm test`
 - 代码风格：ESM、无构建步骤、客户端不使用 JSX，全部走主题变量。
-- 宿主路由：`GET /prompt-optimize/models`、`POST /prompt-optimize/optimize`（NDJSON 流）、`POST /prompt-optimize/variables`。
+- 宿主路由：`GET /prompt-optimize/models`、`POST /prompt-optimize/optimize`（NDJSON 流）、`POST /prompt-optimize/variables`、`POST /prompt-optimize/review`。
 
 ## 许可证
 

@@ -4,7 +4,7 @@
 
 [中文](./README.md) · [English](./README_en.md) · [Español](./README_es.md) · [Français](./README_fr.md) · [Deutsch](./README_de.md) · [Русский](./README_ru.md) · **日本語**
 
-入力欄にある荒削りな下書きを、そのまま使えるプロンプトに変えるDeepSeek Harnessプラグインです。置き換える前に1行ずつのdiffを確認でき、置き換えた後も9秒間は元に戻せます。さらに、バージョン比較ができるローカル履歴と、再利用できるテンプレート集を備えています。
+入力欄にある荒削りな下書きを、そのまま使えるプロンプトに変えるDeepSeek Harnessプラグインです。置き換える前に1行ずつのdiffを確認でき、置き換えた後も9秒間は元に戻せます。さらに、バージョン比較ができるローカル履歴、6観点のチェック、2案の切り替え、15個の組み込みテンプレートと自作テンプレートを備えています。
 
 テンプレートの選び方と各テンプレートの用途は [テンプレートガイド](./docs/TEMPLATES.ja.md) を参照してください。
 
@@ -54,8 +54,8 @@ dsh plugin --profile web add @minus77/dsh-prompt-optimize
 ```bash
 git clone https://github.com/Minus77/dsh-prompt-optimize.git
 cd dsh-prompt-optimize
-npm pack          # produces minus77-dsh-prompt-optimize-0.1.0.tgz
-dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.1.0.tgz
+npm pack          # produces minus77-dsh-prompt-optimize-0.2.0.tgz
+dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.2.0.tgz
 ```
 
 </details>
@@ -85,7 +85,7 @@ dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.1.0.tgz
 ### ローカル開発
 
 ```bash
-npm test                                   # 21 unit tests, no network
+npm test                                   # 32 unit tests, no network
 dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 ```
 
@@ -108,6 +108,24 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 確定すると下書きが置き換わり、9秒間の取り消しバーが表示されます。
 
 ![取り消し](./docs/screenshots/05-undo.png)
+
+### チェック
+
+結果カード右上の「チェック」は下書きを書き換えません。総合点、6観点の点数、重要度順に最大5件の問題を返します。各問題は原文の該当箇所を引用し、その場で適用できる置き換え案を提示します。ほかの文章は動きません。
+
+![チェック](./docs/screenshots/10-checkup.png)
+
+### もう1案
+
+結果がしっくりこないときは下部の「もう1案」を押します。直前の版は「もう1案」チップに退避され、2つを交互に見比べられます。文字数・所要時間・トークン数も表示中の版に合わせて切り替わります。
+
+![もう1案](./docs/screenshots/12-variants.png)
+
+### 自作テンプレート
+
+テンプレートメニューの最後が「新しい自作テンプレート」です。名前・書き換え指示・対象を入れて保存すると、組み込みと同じように一覧に出ます。保存先はこのブラウザのlocalStorageだけで、別のマシンへはJSONの書き出し／読み込みで移します。
+
+![自作テンプレート](./docs/screenshots/11-custom-template.png)
 
 ### プレースホルダー
 
@@ -139,19 +157,27 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 
 ## テンプレート
 
-用途ごとに分かれた7個の組み込みテンプレートです。詳しい説明は [docs/TEMPLATES.ja.md](./docs/TEMPLATES.ja.md) にあります。
+用途ごとに分かれた15個の組み込みテンプレートです。詳しい説明は [docs/TEMPLATES.ja.md](./docs/TEMPLATES.ja.md) にあります。
 
 | テンプレート | モード | グループ | 用途 |
 | --- | --- | --- | --- |
-| Task brief | Prompt | Basic | 「Xを手伝って」系のほとんどの下書き |
-| Delivery contract | Prompt | Structure | 受け入れ基準を明示した作業 |
-| Worked examples | Prompt | Examples | サンプルでスタイルや書式を固定したい場合 |
-| Reasoning steps | Prompt | Reasoning | 中間チェックを挟む多段の分析 |
-| Role contract | System | Basic | 長く使う役割の制約 |
-| Agent persona | System | Basic | 語り口と判断の癖 |
-| Incremental edit | Iterate | Iterate | あるバージョンへの小さな変更 |
+| Task brief | Prompt | 基本 | 「Xを手伝って」系のほとんどの下書き |
+| Delivery contract | Prompt | 構成 | 受け入れ基準を明示した作業 |
+| Structured extraction | Prompt | 構成 | 資料から決まった項目を安定して取り出す |
+| Worked examples | Prompt | 例示 | サンプルでスタイルや書式を固定したい場合 |
+| Reasoning steps | Prompt | 推論 | 中間チェックを挟む多段の分析 |
+| Grounded Q&A | Prompt | 推論 | 与えた資料に基づいて引用付きで回答 |
+| Code review | Prompt | エンジニアリング | 範囲と優先度を決めたコードレビュー |
+| Implementation task | Prompt | エンジニアリング | 受け入れ条件・インターフェース・境界を含む実装依頼 |
+| SQL query | Prompt | エンジニアリング | 指標定義・項目・性能制約を明示した抽出 |
+| Test design | Prompt | エンジニアリング | 正常・境界・異常・権限を網羅するケース |
+| Translation | Prompt | 文章 | 読み手・用語集・書式を指定した翻訳 |
+| Copy polish | Prompt | 文章 | どこまで直してよいか、勝手に足さない |
+| Role contract | System | 基本 | 長く使う役割の制約 |
+| Agent persona | System | 基本 | 語り口と判断の癖 |
+| Incremental edit | Iterate | 反復 | あるバージョンへの小さな変更 |
 
-テンプレートはパネル内で切り替えられます。切り替えると、現在の結果を黙って上書きする代わりに、フッターに "rerun with new template" が表示されます。
+テンプレートはパネル内で切り替えられます。切り替えると、現在の結果を黙って上書きする代わりに、フッターに "rerun with new template" が表示されます。同じメニューから自作テンプレートの作成とJSONの書き出し／読み込みもできます。
 
 ## ショートカット
 
@@ -173,6 +199,8 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 - テキストのみ: 画像の添付はまだ書き換えの入力として受け付けません。
 - 1回の下書きは60,000文字まで、取り出せる変数は最大5個です。
 - システムプロンプト用のテンプレートはAPIにはありますが、パネルに表示されるのはPromptとIterateだけです。
+- チェックは診断のみで、下書き自体は書き換えません。引用は10〜80文字の連続した範囲が必要なため、非常に短い下書きでは指摘が出ないことがあります。
+- カスタムテンプレートはこのブラウザのlocalStorageにだけ保存されます。移行にはJSONの書き出し／読み込みを使ってください。
 - 既定のモデルが必要です。使えない場合は、黙って失敗するのではなくパネルがはっきりと知らせます。
 
 ## 開発
@@ -181,8 +209,9 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 src/spec.js          template metadata and queries
 src/prompts.js       prompt construction per template
 src/placeholders.js  variable parsing, anchoring and application
+src/review.js        checkup parsing, validation and normalization
 src/catalog.js       model and template catalog
-src/index.js         host routes (models / optimize / variables)
+src/index.js         host routes (models / optimize / variables / review)
 src/web.js           client panel (React + theme tokens)
 test/                node:test unit tests
 ```
