@@ -25,7 +25,7 @@ const MAX_FIELD_CHARS = 200;
 const MAX_VARIABLES = 5;
 const MAX_TOKENS = 16_384;
 /** A checkup is a small JSON object; a generous cap still bounds the cost. */
-const MAX_REVIEW_TOKENS = 4_096;
+const MAX_REVIEW_TOKENS = 8_192;
 
 /** Raised by request validation; the guard turns it into a JSON error. */
 class RequestError extends Error {
