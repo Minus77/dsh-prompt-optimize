@@ -2021,7 +2021,7 @@ window.__ModuleLoader__.load({
           h("label", { className: "po-note" }, T("改写要求")),
           h("textarea", {
             className: "po-input",
-            style: { minHeight: 110 },
+            style: { minHeight: 132 },
             value: editForm.instruction,
             placeholder: T("例如：把语气改成客服口吻，结尾加一句道歉，不要超过 150 字。"),
             maxLength: 2000,
