@@ -8,7 +8,7 @@
 
 テンプレートの選び方と各テンプレートの用途は [テンプレートガイド](./docs/TEMPLATES.ja.md) を参照してください。
 
-![最適化パネル](./docs/screenshots/02-panel.png)
+![最適化パネル](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/02-panel.png)
 
 ## なぜ必要か
 
@@ -95,7 +95,7 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 
 下書きを書いてから、入力欄の右側にあるボタンをクリックします。
 
-![入口](./docs/screenshots/01-entry.png)
+![入口](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/01-entry.png)
 
 パネルが入力欄の上に開き、そのまま書き換えが始まります。初回は履歴を残すかどうかを尋ねられ、答えた内容は記憶されます。
 
@@ -103,35 +103,35 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 
 ストリームが終わったら "Replace draft" をクリックすると、先にdiffが表示されます。
 
-![diff確認](./docs/screenshots/04-diff.png)
+![diff確認](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/04-diff.png)
 
 確定すると下書きが置き換わり、9秒間の取り消しバーが表示されます。
 
-![取り消し](./docs/screenshots/05-undo.png)
+![取り消し](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/05-undo.png)
 
 ### チェック
 
 結果カード右上の「チェック」は下書きを書き換えません。総合点、6観点の点数、重要度順に最大5件の問題を返します。各問題は原文の該当箇所を引用し、その場で適用できる置き換え案を提示します。ほかの文章は動きません。
 
-![チェック](./docs/screenshots/10-checkup.png)
+![チェック](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/10-checkup.png)
 
 ### もう1案
 
 結果がしっくりこないときは下部の「もう1案」を押します。直前の版は「もう1案」チップに退避され、2つを交互に見比べられます。文字数・所要時間・トークン数も表示中の版に合わせて切り替わります。
 
-![もう1案](./docs/screenshots/12-variants.png)
+![もう1案](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/12-variants.png)
 
 ### 自作テンプレート
 
 テンプレートメニューの最後が「新しい自作テンプレート」です。名前・書き換え指示・対象を入れて保存すると、組み込みと同じように一覧に出ます。保存先はこのブラウザのlocalStorageだけで、別のマシンへはJSONの書き出し／読み込みで移します。
 
-![自作テンプレート](./docs/screenshots/11-custom-template.png)
+![自作テンプレート](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/11-custom-template.png)
 
 ### プレースホルダー
 
 結果の波括弧ボタンをクリックします。モデルが再利用できる断片を最大5個見つけ、`{{variables}}` として書き換えます。
 
-![プレースホルダー](./docs/screenshots/03-variables.png)
+![プレースホルダー](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/03-variables.png)
 
 "Write back" を押すと変数付きの版が入力欄に入るので、再利用時に変えるのは値だけです。
 
@@ -139,21 +139,21 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 
 "Iterate" に切り替え、変更を1つ伝えます（例:「トーンをもう少し軽くして、確認待ちリストを3行にまとめて」）。関係する箇所だけが動きます。
 
-![反復](./docs/screenshots/08-iterate.png)
+![反復](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/08-iterate.png)
 
 ### 履歴と比較
 
 時計のボタンで履歴を開きます。各行にはバージョン、テンプレート、文字数の増減が並び、展開するとコピー、復元、比較、削除ができます。
 
-![履歴](./docs/screenshots/06-history.png)
+![履歴](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/06-history.png)
 
-![比較](./docs/screenshots/07-compare.png)
+![比較](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/07-compare.png)
 
 ### 中国語のUI
 
 中国語ロケールでは、同じパネル、テンプレート、ボタンがローカライズされます。
 
-![中文界面](./docs/screenshots/02-panel.png)
+![中文界面](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/02-panel.png)
 
 ## テンプレート
 

@@ -8,7 +8,7 @@ Un plugin DeepSeek Harness qui transforme le brouillon approximatif de votre zon
 
 Pour savoir quel modèle choisir et à quoi sert chacun, voir le [guide des modèles](./docs/TEMPLATES.fr.md).
 
-![Panneau de l'optimiseur](./docs/screenshots/02-panel.png)
+![Panneau de l'optimiseur](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/02-panel.png)
 
 ## Pourquoi
 
@@ -98,7 +98,7 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 
 Rédigez un brouillon, puis cliquez sur le bouton à droite de la zone de saisie.
 
-![Entrée](./docs/screenshots/01-entry.png)
+![Entrée](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/01-entry.png)
 
 Le panneau s'ouvre au-dessus de la zone de saisie et lance la réécriture. La première exécution demande si vous souhaitez conserver l'historique ; la réponse est mémorisée.
 
@@ -106,23 +106,23 @@ Le panneau s'ouvre au-dessus de la zone de saisie et lance la réécriture. La p
 
 À la fin du flux, cliquez sur « Replace draft » pour afficher d'abord le diff :
 
-![Relecture du diff](./docs/screenshots/04-diff.png)
+![Relecture du diff](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/04-diff.png)
 
 Après confirmation, le brouillon est remplacé et une barre d'annulation apparaît pendant neuf secondes :
 
-![Annulation](./docs/screenshots/05-undo.png)
+![Annulation](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/05-undo.png)
 
 ### Bilan
 
 Le bouton de bilan dans l'en-tête du résultat ne modifie jamais le brouillon. Il renvoie une note globale, six notes par dimension et jusqu'à cinq problèmes classés par gravité. Chaque problème cite le passage exact et propose un remplacement applicable sur place ; le reste du texte ne bouge pas.
 
-![Bilan](./docs/screenshots/10-checkup.png)
+![Bilan](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/10-checkup.png)
 
 ### Autre version
 
 Le résultat ne convient pas ? Appuyez sur « Autre version » en bas. La version précédente passe derrière la puce « autre version » et les deux se basculent ; le nombre de caractères, la durée et les tokens suivent la version active.
 
-![Autre version](./docs/screenshots/12-variants.png)
+![Autre version](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/12-variants.png)
 
 ### Modèles
 

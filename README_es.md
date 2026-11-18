@@ -8,7 +8,7 @@ Un plugin de DeepSeek Harness que convierte el borrador aproximado de tu composi
 
 Para saber qué plantilla elegir y para qué sirve cada una, consulta la [guía de plantillas](./docs/TEMPLATES.es.md).
 
-![Panel del optimizador](./docs/screenshots/02-panel.png)
+![Panel del optimizador](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/02-panel.png)
 
 ## Por qué
 
@@ -98,7 +98,7 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 
 Escribe un borrador y pulsa el botón a la derecha del compositor.
 
-![Entrada](./docs/screenshots/01-entry.png)
+![Entrada](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/01-entry.png)
 
 El panel se abre encima del compositor y empieza a reescribir. La primera vez pregunta si quieres guardar el historial; la respuesta se recuerda.
 
@@ -106,23 +106,23 @@ El panel se abre encima del compositor y empieza a reescribir. La primera vez pr
 
 Cuando termina el streaming, pulsa “Replace draft” para ver primero el diff:
 
-![Revisión del diff](./docs/screenshots/04-diff.png)
+![Revisión del diff](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/04-diff.png)
 
 Al confirmar, el borrador se sustituye y aparece una barra de deshacer durante nueve segundos:
 
-![Deshacer](./docs/screenshots/05-undo.png)
+![Deshacer](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/05-undo.png)
 
 ### Revisión
 
 El botón de revisión de la cabecera del resultado nunca edita el borrador. Devuelve una puntuación total, seis puntuaciones por dimensión y hasta cinco problemas ordenados por gravedad. Cada problema cita el fragmento exacto y ofrece un reemplazo que puedes aplicar en el sitio; el resto del texto no se toca.
 
-![Revisión](./docs/screenshots/10-checkup.png)
+![Revisión](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/10-checkup.png)
 
 ### Otra versión
 
 ¿No te convence el resultado? Pulsa "Otra versión" en el pie. La versión anterior pasa detrás de la pestaña "otra versión" y puedes alternar entre ambas; el recuento de caracteres, el tiempo y el uso de tokens siguen a la versión activa.
 
-![Otra versión](./docs/screenshots/12-variants.png)
+![Otra versión](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/12-variants.png)
 
 ### Plantillas
 

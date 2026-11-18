@@ -8,7 +8,7 @@
 
 Какой шаблон выбрать и для чего нужен каждый: см. [руководство по шаблонам](./docs/TEMPLATES.ru.md).
 
-![Панель оптимизатора](./docs/screenshots/02-panel.png)
+![Панель оптимизатора](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/02-panel.png)
 
 ## Зачем
 
@@ -98,7 +98,7 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 
 Напишите черновик и нажмите кнопку справа от поля ввода.
 
-![Вход](./docs/screenshots/01-entry.png)
+![Вход](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/01-entry.png)
 
 Панель раскрывается над полем ввода и начинает переписывать. При первом запуске она спрашивает, сохранять ли историю; ответ запоминается.
 
@@ -106,35 +106,35 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 
 Когда поток закончится, нажмите «Replace draft», чтобы сначала увидеть diff:
 
-![Проверка diff](./docs/screenshots/04-diff.png)
+![Проверка diff](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/04-diff.png)
 
 После подтверждения черновик заменяется, а внизу на девять секунд появляется панель отмены:
 
-![Отмена](./docs/screenshots/05-undo.png)
+![Отмена](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/05-undo.png)
 
 ### Проверка
 
 Кнопка проверки в шапке результата никогда не меняет черновик. Она показывает общую оценку, шесть оценок по критериям и до пяти проблем по убыванию важности. Каждая проблема цитирует точный фрагмент и предлагает замену, которую можно применить на месте; остальной текст не трогается.
 
-![Проверка](./docs/screenshots/10-checkup.png)
+![Проверка](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/10-checkup.png)
 
 ### Вторая версия
 
 Результат не нравится? Нажмите «Вторая версия» внизу. Предыдущая версия уходит за чип, между ними можно переключаться; число символов, время и токены следуют за активной версией.
 
-![Вторая версия](./docs/screenshots/12-variants.png)
+![Вторая версия](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/12-variants.png)
 
 ### Свои шаблоны
 
 Последний пункт меню шаблонов — «Новый свой шаблон»: название, инструкция переписывания и аудитория. Дальше он появляется рядом со встроенными. Свои шаблоны живут только в localStorage этого браузера; для переноса используйте импорт и экспорт JSON.
 
-![Свой шаблон](./docs/screenshots/11-custom-template.png)
+![Свой шаблон](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/11-custom-template.png)
 
 ### Плейсхолдеры
 
 Нажмите кнопку с фигурными скобками на результате. Модель найдёт до пяти переиспользуемых фрагментов и перепишет их как `{{variables}}`:
 
-![Плейсхолдеры](./docs/screenshots/03-variables.png)
+![Плейсхолдеры](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/03-variables.png)
 
 «Write back» записывает версию с переменными в поле ввода, так что при повторном использовании остаётся только менять значения.
 
@@ -142,21 +142,21 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 
 Переключитесь на «Iterate» и опишите одно изменение, например: «сделай тон легче и уложи длинный список пунктов к уточнению в три строки». Изменятся только нужные фрагменты:
 
-![Итерации](./docs/screenshots/08-iterate.png)
+![Итерации](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/08-iterate.png)
 
 ### История и сравнение
 
 Кнопка с часами открывает историю. В каждой строке видны версия, шаблон и изменение числа символов; строка раскрывается, чтобы скопировать, восстановить, сравнить или удалить запись:
 
-![История](./docs/screenshots/06-history.png)
+![История](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/06-history.png)
 
-![Сравнение](./docs/screenshots/07-compare.png)
+![Сравнение](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/07-compare.png)
 
 ### Китайский интерфейс
 
 При китайской локали та же панель, шаблоны и кнопки локализованы:
 
-![Китайский интерфейс](./docs/screenshots/02-panel.png)
+![Китайский интерфейс](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/02-panel.png)
 
 ## Шаблоны
 

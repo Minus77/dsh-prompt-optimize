@@ -8,7 +8,7 @@ A DeepSeek Harness plugin that turns the rough draft in your composer into a pro
 
 Which template to pick, and what each one is for: see [the template guide](./docs/TEMPLATES.en.md).
 
-![Optimizer panel](./docs/screenshots/02-panel.png)
+![Optimizer panel](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/02-panel.png)
 
 ## Why
 
@@ -98,7 +98,7 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 
 Write a draft, then click the seat at the right of the composer.
 
-![Entry](./docs/screenshots/01-entry.png)
+![Entry](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/01-entry.png)
 
 The panel opens above the composer and starts rewriting. The first run asks whether to keep history; the answer is remembered.
 
@@ -106,35 +106,35 @@ The panel opens above the composer and starts rewriting. The first run asks whet
 
 When the stream ends, click "Replace draft" to see the diff first:
 
-![Diff review](./docs/screenshots/04-diff.png)
+![Diff review](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/04-diff.png)
 
 After confirming, the draft is replaced and an undo bar appears for nine seconds:
 
-![Undo](./docs/screenshots/05-undo.png)
+![Undo](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/05-undo.png)
 
 ### Checkup
 
 The checkup button in the result header never edits the draft. It reports a total score, six dimension scores, and up to five issues ordered by severity. Each issue quotes the exact span and offers a replacement you can apply in place; the rest of the text stays untouched.
 
-![Checkup](./docs/screenshots/10-checkup.png)
+![Checkup](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/10-checkup.png)
 
 ### Another take
 
 Not happy with a result? Press "Another take" in the footer. The previous version moves behind the "another take" chip, and the two can be flipped back and forth; character count, elapsed time and token usage follow the active version.
 
-![Another take](./docs/screenshots/12-variants.png)
+![Another take](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/12-variants.png)
 
 ### Custom templates
 
 The last item in the template menu is "New custom template": give it a name, a rewrite instruction and who it is for. It then shows up next to the built-ins. Custom templates live in this browser's localStorage only — use JSON import/export to move them between machines.
 
-![Custom template](./docs/screenshots/11-custom-template.png)
+![Custom template](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/11-custom-template.png)
 
 ### Placeholders
 
 Click the braces button on the result. The model finds up to five reusable fragments and rewrites them as `{{variables}}`:
 
-![Placeholders](./docs/screenshots/03-variables.png)
+![Placeholders](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/03-variables.png)
 
 "Write back" puts the parameterized version into the composer, so reuse only means changing values.
 
@@ -142,21 +142,21 @@ Click the braces button on the result. The model finds up to five reusable fragm
 
 Switch to "Iterate" and describe one change, e.g. "make the tone lighter and collapse the pending list into three lines". Only the relevant passages move:
 
-![Iterate](./docs/screenshots/08-iterate.png)
+![Iterate](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/08-iterate.png)
 
 ### History and compare
 
 The clock button opens history. Each row shows version, template and character delta, and expands to copy, restore, compare or delete:
 
-![History](./docs/screenshots/06-history.png)
+![History](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/06-history.png)
 
-![Compare](./docs/screenshots/07-compare.png)
+![Compare](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/07-compare.png)
 
 ### Chinese UI
 
 With a Chinese locale the same panel, templates and buttons are localized:
 
-![中文界面](./docs/screenshots/02-panel.png)
+![中文界面](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/02-panel.png)
 
 ## Templates
 

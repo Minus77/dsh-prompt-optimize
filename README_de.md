@@ -8,7 +8,7 @@ Ein Plugin für DeepSeek Harness, das den groben Entwurf in deinem Eingabefeld z
 
 Welche Vorlage du wählst und wofür jede gedacht ist: siehe [Vorlagenanleitung](./docs/TEMPLATES.de.md).
 
-![Optimizer-Panel](./docs/screenshots/02-panel.png)
+![Optimizer-Panel](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/02-panel.png)
 
 ## Warum
 
@@ -98,7 +98,7 @@ dsh plugin --profile dev add file:$PWD     # symlinked; restart to pick up edits
 
 Schreibe einen Entwurf und klicke dann auf den Button rechts am Eingabefeld.
 
-![Einstieg](./docs/screenshots/01-entry.png)
+![Einstieg](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/01-entry.png)
 
 Das Panel öffnet sich über dem Eingabefeld und beginnt mit dem Umschreiben. Beim ersten Lauf wirst du gefragt, ob die Historie gespeichert werden soll; die Antwort wird gemerkt.
 
@@ -106,35 +106,35 @@ Das Panel öffnet sich über dem Eingabefeld und beginnt mit dem Umschreiben. Be
 
 Wenn der Stream endet, klicke auf „Replace draft“, um zuerst den Diff zu sehen:
 
-![Diff-Prüfung](./docs/screenshots/04-diff.png)
+![Diff-Prüfung](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/04-diff.png)
 
 Nach der Bestätigung wird der Entwurf ersetzt und neun Sekunden lang erscheint eine Undo-Leiste:
 
-![Undo](./docs/screenshots/05-undo.png)
+![Undo](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/05-undo.png)
 
 ### Prüfung
 
 Der Prüfbutton im Kopf des Ergebnisses ändert den Entwurf nie. Er liefert eine Gesamtnote, sechs Teilnoten und bis zu fünf nach Schwere sortierte Probleme. Jedes Problem zitiert die genaue Stelle und bietet einen Ersatz, den du direkt anwendest; der übrige Text bleibt unverändert.
 
-![Prüfung](./docs/screenshots/10-checkup.png)
+![Prüfung](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/10-checkup.png)
 
 ### Zweite Fassung
 
 Das Ergebnis überzeugt nicht? Drücke unten auf „Zweite Fassung“. Die vorherige Fassung wandert hinter den Chip, und du kannst zwischen beiden wechseln; Zeichenzahl, Dauer und Token-Verbrauch folgen der aktiven Fassung.
 
-![Zweite Fassung](./docs/screenshots/12-variants.png)
+![Zweite Fassung](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/12-variants.png)
 
 ### Eigene Vorlagen
 
 Der letzte Eintrag im Vorlagenmenü ist „Neue eigene Vorlage“: Name, Umschreib-Anweisung und Zielgruppe eintragen. Danach erscheint sie neben den integrierten. Eigene Vorlagen liegen nur im localStorage dieses Browsers; für den Umzug auf einen anderen Rechner dienen JSON-Import und -Export.
 
-![Eigene Vorlage](./docs/screenshots/11-custom-template.png)
+![Eigene Vorlage](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/11-custom-template.png)
 
 ### Platzhalter
 
 Klicke auf die geschweiften Klammern am Ergebnis. Das Modell findet bis zu fünf wiederverwendbare Fragmente und schreibt sie als `{{variables}}` um:
 
-![Platzhalter](./docs/screenshots/03-variables.png)
+![Platzhalter](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/03-variables.png)
 
 „Write back“ schreibt die parametrisierte Version zurück ins Eingabefeld, sodass Wiederverwendung nur noch das Ändern von Werten bedeutet.
 
@@ -142,21 +142,21 @@ Klicke auf die geschweiften Klammern am Ergebnis. Das Modell findet bis zu fünf
 
 Wechsle zu „Iterate“ und beschreibe eine Änderung, z. B. „mach den Ton lockerer und fasse die Liste der offenen Punkte in drei Zeilen zusammen“. Nur die betroffenen Passagen ändern sich:
 
-![Iterieren](./docs/screenshots/08-iterate.png)
+![Iterieren](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/08-iterate.png)
 
 ### Historie und Vergleich
 
 Der Uhr-Button öffnet die Historie. Jede Zeile zeigt Version, Vorlage und Zeichen-Delta und lässt sich aufklappen, um zu kopieren, wiederherzustellen, zu vergleichen oder zu löschen:
 
-![Historie](./docs/screenshots/06-history.png)
+![Historie](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/06-history.png)
 
-![Vergleich](./docs/screenshots/07-compare.png)
+![Vergleich](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/07-compare.png)
 
 ### Chinesische Oberfläche
 
 Bei chinesischer Oberflächensprache sind dasselbe Panel, dieselben Vorlagen und dieselben Buttons lokalisiert:
 
-![Chinesische Oberfläche](./docs/screenshots/02-panel.png)
+![Chinesische Oberfläche](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/02-panel.png)
 
 ## Vorlagen
 

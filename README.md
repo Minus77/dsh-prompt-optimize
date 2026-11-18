@@ -8,7 +8,7 @@
 
 模板怎么选、每个模板适合什么场景：见 [模板说明](./docs/TEMPLATES.md)。
 
-![优化面板](./docs/screenshots/02-panel.png)
+![优化面板](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/02-panel.png)
 
 ## 它解决什么问题
 
@@ -98,7 +98,7 @@ dsh plugin --profile dev add file:$PWD     # 软链当前目录，改完重启�
 
 在输入框写好草稿，点输入框右下角的“提示词优化”。
 
-![入口](./docs/screenshots/01-entry.png)
+![入口](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/01-entry.png)
 
 面板会在输入框上方展开并自动改写。第一次使用时可以选择是否保留历史，选择结果会记住。
 
@@ -106,29 +106,29 @@ dsh plugin --profile dev add file:$PWD     # 软链当前目录，改完重启�
 
 结果读完后点“替换草稿”，先进入 diff 确认页：
 
-![diff 确认](./docs/screenshots/04-diff.png)
+![diff 确认](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/04-diff.png)
 
 确认后草稿被替换，底部出现 9 秒撤销条：
 
-![撤销](./docs/screenshots/05-undo.png)
+![撤销](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/05-undo.png)
 
 ### 体检
 
 结果卡右上角的“体检”按钮不会改动草稿，只做诊断：给总分和六个维度的分数，再按严重度列出最多 5 条问题。每条问题都引用原文片段，并给出一句可直接替换的修订文本；点“应用”就地把那一处换掉，其余文字保持不动。
 
-![体检](./docs/screenshots/10-checkup.png)
+![体检](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/10-checkup.png)
 
 ### 另一版
 
 对结果不满意时点底部的“再来一版”，上一版会收进“另一版”标签页，当前版本与旧版本可以来回切换；切换时字数、耗时和 token 用量一起跟着变。
 
-![另一版](./docs/screenshots/12-variants.png)
+![另一版](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/12-variants.png)
 
 ### 参数化片段
 
 点结果右上角的变量按钮，模型会从结果里找出最多 5 个值得复用的片段，写成 `{{中文或英文名}}`：
 
-![参数化](./docs/screenshots/03-variables.png)
+![参数化](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/03-variables.png)
 
 点“写回模板”把带变量的版本写回草稿，之后每次复用只改变量值即可。
 
@@ -136,27 +136,27 @@ dsh plugin --profile dev add file:$PWD     # 软链当前目录，改完重启�
 
 切到“迭代优化”，用一句话说明想改什么，例如“语气更轻松一点，把待确认的长列表收成三行”。模型只改相关段落：
 
-![迭代](./docs/screenshots/08-iterate.png)
+![迭代](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/08-iterate.png)
 
 ### 历史与对比
 
 顶部时钟按钮进入历史。每条记录带版本号、模板、字数变化，可展开复看、复制、写回、对比或删除：
 
-![历史](./docs/screenshots/06-history.png)
+![历史](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/06-history.png)
 
-![版本对比](./docs/screenshots/07-compare.png)
+![版本对比](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/07-compare.png)
 
 ### 自定义模板
 
 模板菜单的最后一项是“新建自定义模板”：填名称、改写要求和适用对象即可保存，之后和其他模板一样出现在菜单里。自定义模板只存在这台浏览器的 localStorage，不会上传；可以用 JSON 导入导出，换机器时带走。
 
-![自定义模板](./docs/screenshots/11-custom-template.png)
+![自定义模板](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/11-custom-template.png)
 
 ### English UI
 
 界面语言为英文时，插件文案、模板名和按钮全部切换：
 
-![English](./docs/screenshots/09-en.png)
+![English](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/09-en.png)
 
 ## 模板
 
