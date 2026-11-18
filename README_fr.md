@@ -148,6 +148,12 @@ Quinze modèles intégrés, groupés par intention. Les descriptions complètes 
 
 Les modèles se changent dans le panneau ; le pied de page propose alors « rerun with new template » au lieu d'écraser le résultat en silence. Le même menu permet de créer un modèle personnalisé et de l'importer ou l'exporter en JSON.
 
+### Modèles personnalisés
+
+Le dernier élément du menu ouvre l'éditeur : nom, consigne de réécriture et type de brouillon concerné. Le modèle n'est conservé que dans le `localStorage` de ce navigateur et n'est envoyé nulle part ; pour le transférer ou le partager, utilisez « Exporter JSON » et « Importer JSON » dans le même éditeur.
+
+![Modèles personnalisés](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/11-custom-template.png)
+
 ## Raccourcis
 
 | Action | Touche |

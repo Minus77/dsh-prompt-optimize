@@ -148,6 +148,12 @@ Quince plantillas integradas, agrupadas por intención. Las descripciones comple
 
 Las plantillas se cambian dentro del panel; el pie ofrece entonces "rerun with new template" en lugar de sobrescribir el resultado en silencio. El mismo menú permite crear una plantilla propia e importarla o exportarla en JSON.
 
+### Plantillas propias
+
+El último elemento del menú abre el editor: nombre, consigna de reescritura y para qué borradores sirve. La plantilla se guarda solo en el `localStorage` de este navegador y no se sube a ningún sitio; para llevarla a otro equipo o compartirla, usa «Exportar JSON» e «Importar JSON» del mismo editor.
+
+![Plantillas propias](https://raw.githubusercontent.com/Minus77/dsh-prompt-optimize/main/docs/screenshots/11-custom-template.png)
+
 ## Atajos
 
 | Acción | Tecla |
