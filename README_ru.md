@@ -57,8 +57,8 @@ dsh plugin --profile web add @minus77/dsh-prompt-optimize
 ```bash
 git clone https://github.com/Minus77/dsh-prompt-optimize.git
 cd dsh-prompt-optimize
-npm pack          # produces minus77-dsh-prompt-optimize-0.2.0.tgz
-dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.2.0.tgz
+npm pack          # produces minus77-dsh-prompt-optimize-0.3.0.tgz
+dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.3.0.tgz
 ```
 
 </details>
