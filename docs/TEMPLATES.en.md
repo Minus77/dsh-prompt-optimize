@@ -1,8 +1,8 @@
 # Templates
 
-[中文](./TEMPLATES.md) · **English** · [Español](./TEMPLATES.es.md) · [Français](./TEMPLATES.fr.md) · [Deutsch](./TEMPLATES.de.md) · [Русский](./TEMPLATES.ru.md) · [日本語](./TEMPLATES.ja.md)
+[中文](./TEMPLATES.md) · **English** · [Español](./TEMPLATES.es.md) · [Français](./TEMPLATES.fr.md) · [Deutsch](./TEMPLATES.de.md) · [Русский](./TEMPLATES.ru.md) · [日本語](./TEMPLATES.ja.md) · [Português (BR)](./TEMPLATES.pt.md)
 
-The plugin ships seven templates. You switch them from the top-right of the optimizer panel; switching changes **how the draft is rewritten**, never the draft itself.
+The plugin ships fifteen templates. You switch them from the top-right of the optimizer panel; switching changes **how the draft is rewritten**, never the draft itself.
 
 Each template covers a different facet of the same problem:
 

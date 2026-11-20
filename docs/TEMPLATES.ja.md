@@ -1,6 +1,6 @@
 # テンプレート
 
-[中文](./TEMPLATES.md) · [English](./TEMPLATES.en.md) · [Español](./TEMPLATES.es.md) · [Français](./TEMPLATES.fr.md) · [Deutsch](./TEMPLATES.de.md) · [Русский](./TEMPLATES.ru.md) · **日本語**
+[中文](./TEMPLATES.md) · [English](./TEMPLATES.en.md) · [Español](./TEMPLATES.es.md) · [Français](./TEMPLATES.fr.md) · [Deutsch](./TEMPLATES.de.md) · [Русский](./TEMPLATES.ru.md) · **日本語** · [Português (BR)](./TEMPLATES.pt.md)
 
 このプラグインには15個のテンプレートが組み込まれています。テンプレートは最適化パネルの右上で切り替えます。切り替えが変えるのは**下書きの書き換え方**だけで、下書きそのものには触れません。
 

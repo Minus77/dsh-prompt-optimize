@@ -1,6 +1,6 @@
 # Plantillas
 
-[中文](./TEMPLATES.md) · [English](./TEMPLATES.en.md) · **Español** · [Français](./TEMPLATES.fr.md) · [Deutsch](./TEMPLATES.de.md) · [Русский](./TEMPLATES.ru.md) · [日本語](./TEMPLATES.ja.md)
+[中文](./TEMPLATES.md) · [English](./TEMPLATES.en.md) · **Español** · [Français](./TEMPLATES.fr.md) · [Deutsch](./TEMPLATES.de.md) · [Русский](./TEMPLATES.ru.md) · [日本語](./TEMPLATES.ja.md) · [Português (BR)](./TEMPLATES.pt.md)
 
 El plugin incluye quince plantillas. Se cambian desde la esquina superior derecha del panel del optimizador; cambiarlas modifica **cómo se reescribe el borrador**, nunca el borrador en sí.
 

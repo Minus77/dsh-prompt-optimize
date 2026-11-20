@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/@minus77/dsh-prompt-optimize?color=3a42d6)](https://www.npmjs.com/package/@minus77/dsh-prompt-optimize) [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
-[中文](./README.md) · [English](./README_en.md) · [Español](./README_es.md) · [Français](./README_fr.md) · [Deutsch](./README_de.md) · **Русский** · [日本語](./README_ja.md)
+[中文](./README.md) · [English](./README_en.md) · [Español](./README_es.md) · [Français](./README_fr.md) · [Deutsch](./README_de.md) · **Русский** · [日本語](./README_ja.md) · [Português (BR)](./README_pt.md)
 
 Плагин для DeepSeek Harness, который превращает черновик из поля ввода в промпт, которым действительно можно пользоваться. Перед заменой вы смотрите построчный diff, после замены девять секунд остаётся на отмену, а локальная история хранит цепочки версий со сравнением; результат можно проверить по шести критериям, сохранить вторую версию и взять один из 15 встроенных шаблонов или свой.
 
@@ -36,7 +36,7 @@
 | Шаблоны | 15 встроенных: базовые / структура / примеры / рассуждение / инженерия / текст / итерация |
 | Свои шаблоны | Своя инструкция переписывания, хранение в этом браузере, импорт и экспорт в JSON |
 | Фиксация модели | Следовать модели сессии или закрепить свою только для этой панели |
-| Двуязычный интерфейс (zh/en) | Автоматически следует языку приложения |
+| Интерфейс на восьми языках | Автоматически следует языку приложения (中文, English, 日本語, Español, Français, Deutsch, Русский, Português) |
 | Приватность | История по умолчанию выключена; при включении остаётся в `localStorage` |
 
 ## Установка
@@ -57,8 +57,8 @@ dsh plugin --profile web add @minus77/dsh-prompt-optimize
 ```bash
 git clone https://github.com/Minus77/dsh-prompt-optimize.git
 cd dsh-prompt-optimize
-npm pack          # produces minus77-dsh-prompt-optimize-0.3.0.tgz
-dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.3.0.tgz
+npm pack          # produces minus77-dsh-prompt-optimize-0.4.0.tgz
+dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.4.0.tgz
 ```
 
 </details>

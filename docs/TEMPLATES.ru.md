@@ -1,6 +1,6 @@
 # Шаблоны
 
-[中文](./TEMPLATES.md) · [English](./TEMPLATES.en.md) · [Español](./TEMPLATES.es.md) · [Français](./TEMPLATES.fr.md) · [Deutsch](./TEMPLATES.de.md) · **Русский** · [日本語](./TEMPLATES.ja.md)
+[中文](./TEMPLATES.md) · [English](./TEMPLATES.en.md) · [Español](./TEMPLATES.es.md) · [Français](./TEMPLATES.fr.md) · [Deutsch](./TEMPLATES.de.md) · **Русский** · [日本語](./TEMPLATES.ja.md) · [Português (BR)](./TEMPLATES.pt.md)
 
 В плагине пятнадцать шаблонов. Переключаются они в правом верхнем углу панели оптимизатора; переключение меняет **то, как переписывается черновик**, но никогда — сам черновик.
 

@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/@minus77/dsh-prompt-optimize?color=3a42d6)](https://www.npmjs.com/package/@minus77/dsh-prompt-optimize) [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
-[中文](./README.md) · [English](./README_en.md) · [Español](./README_es.md) · [Français](./README_fr.md) · [Deutsch](./README_de.md) · [Русский](./README_ru.md) · **日本語**
+[中文](./README.md) · [English](./README_en.md) · [Español](./README_es.md) · [Français](./README_fr.md) · [Deutsch](./README_de.md) · [Русский](./README_ru.md) · **日本語** · [Português (BR)](./README_pt.md)
 
 入力欄にある荒削りな下書きを、そのまま使えるプロンプトに変えるDeepSeek Harnessプラグインです。置き換える前に1行ずつのdiffを確認でき、置き換えた後も9秒間は元に戻せます。さらに、バージョン比較ができるローカル履歴、6観点のチェック、2案の切り替え、15個の組み込みテンプレートと自作テンプレートを備えています。
 
@@ -33,7 +33,7 @@
 | プレースホルダー | 再利用できる断片を最大5個取り出し、`{{snake_case}}` の変数にします |
 | テンプレート | basic / structure / examples / reasoning / iterate の5グループに分かれた7個の組み込みテンプレート |
 | モデル固定 | セッションのモデルに従うか、このパネルだけモデルを固定できます |
-| バイリンガルUI（中/英） | アプリのロケールに自動で追従します |
+| 8言語のUI | アプリのロケールに自動で追従します（中文・English・日本語・Español・Français・Deutsch・Русский・Português） |
 | プライバシー | 履歴は既定でオフ。オンにしても `localStorage` の中に留まります |
 
 ## インストール
@@ -54,8 +54,8 @@ dsh plugin --profile web add @minus77/dsh-prompt-optimize
 ```bash
 git clone https://github.com/Minus77/dsh-prompt-optimize.git
 cd dsh-prompt-optimize
-npm pack          # produces minus77-dsh-prompt-optimize-0.3.0.tgz
-dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.3.0.tgz
+npm pack          # produces minus77-dsh-prompt-optimize-0.4.0.tgz
+dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.4.0.tgz
 ```
 
 </details>

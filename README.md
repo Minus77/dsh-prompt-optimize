@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/@minus77/dsh-prompt-optimize?color=3a42d6)](https://www.npmjs.com/package/@minus77/dsh-prompt-optimize) [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
-**中文** · [English](./README_en.md) · [Español](./README_es.md) · [Français](./README_fr.md) · [Deutsch](./README_de.md) · [Русский](./README_ru.md) · [日本語](./README_ja.md)
+**中文** · [English](./README_en.md) · [Español](./README_es.md) · [Français](./README_fr.md) · [Deutsch](./README_de.md) · [Русский](./README_ru.md) · [日本語](./README_ja.md) · [Português (BR)](./README_pt.md)
 
 一个 DeepSeek Harness 插件：把输入框里的草稿改写成可直接使用的提示词。替换前先看逐行 diff，替换后 9 秒内可撤销；改完还能体检打分、换一版对比；带本地历史、15 个内置模板和自定义模板。
 
@@ -36,7 +36,7 @@
 | 模板库 | 15 个内置模板，按“基础 / 结构 / 示范 / 推理 / 工程 / 写作 / 迭代”分组 |
 | 自定义模板 | 在面板里写自己的改写要求，保存到本机，支持 JSON 导入导出 |
 | 模型固定 | 默认跟随当前模型，也可在面板里指定某个模型 |
-| 中英双语界面 | 跟随界面语言自动切换（当前内置中文与英文），无需单独设置 |
+| 八种界面语言 | 跟随应用语言自动切换（中文、English、日本語、Español、Français、Deutsch、Русский、Português），无需单独设置 |
 | 隐私优先 | 历史默认不开启，开启后只写本机 localStorage |
 
 ## 安装
@@ -57,8 +57,8 @@ dsh plugin --profile web add @minus77/dsh-prompt-optimize
 ```bash
 git clone https://github.com/Minus77/dsh-prompt-optimize.git
 cd dsh-prompt-optimize
-npm pack          # 生成 minus77-dsh-prompt-optimize-0.3.0.tgz
-dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.3.0.tgz
+npm pack          # 生成 minus77-dsh-prompt-optimize-0.4.0.tgz
+dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.4.0.tgz
 ```
 
 </details>

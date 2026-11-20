@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/@minus77/dsh-prompt-optimize?color=3a42d6)](https://www.npmjs.com/package/@minus77/dsh-prompt-optimize) [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
-[中文](./README.md) · **English** · [Español](./README_es.md) · [Français](./README_fr.md) · [Deutsch](./README_de.md) · [Русский](./README_ru.md) · [日本語](./README_ja.md)
+[中文](./README.md) · **English** · [Español](./README_es.md) · [Français](./README_fr.md) · [Deutsch](./README_de.md) · [Русский](./README_ru.md) · [日本語](./README_ja.md) · [Português (BR)](./README_pt.md)
 
 A DeepSeek Harness plugin that turns the rough draft in your composer into a prompt you can actually use. You review a line-by-line diff before it replaces anything, you can undo for nine seconds afterwards, and it keeps a local history with version compare, scores the result, keeps a second take, and ships 15 built-in templates plus your own.
 
@@ -36,7 +36,7 @@ Most prompts that "don't work" are not a model problem — they are a draft prob
 | Templates | 15 built-ins grouped as basic / structure / examples / reasoning / engineering / writing / iterate |
 | Custom templates | Write your own rewrite instruction, save it in this browser, import and export as JSON |
 | Model pin | Follow the session model, or pin one for this panel only |
-| Bilingual UI (zh/en) | Follows the app locale automatically |
+| Eight-language UI | Follows the app locale automatically (中文, English, 日本語, Español, Français, Deutsch, Русский, Português) |
 | Privacy | History off by default; when on, it stays in `localStorage` |
 
 ## Install
@@ -57,8 +57,8 @@ That pulls the published package ([npm](https://www.npmjs.com/package/@minus77/d
 ```bash
 git clone https://github.com/Minus77/dsh-prompt-optimize.git
 cd dsh-prompt-optimize
-npm pack          # produces minus77-dsh-prompt-optimize-0.3.0.tgz
-dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.3.0.tgz
+npm pack          # produces minus77-dsh-prompt-optimize-0.4.0.tgz
+dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.4.0.tgz
 ```
 
 </details>

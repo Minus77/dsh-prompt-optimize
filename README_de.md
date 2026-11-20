@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/@minus77/dsh-prompt-optimize?color=3a42d6)](https://www.npmjs.com/package/@minus77/dsh-prompt-optimize) [![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
-[中文](./README.md) · [English](./README_en.md) · [Español](./README_es.md) · [Français](./README_fr.md) · **Deutsch** · [Русский](./README_ru.md) · [日本語](./README_ja.md)
+[中文](./README.md) · [English](./README_en.md) · [Español](./README_es.md) · [Français](./README_fr.md) · **Deutsch** · [Русский](./README_ru.md) · [日本語](./README_ja.md) · [Português (BR)](./README_pt.md)
 
 Ein Plugin für DeepSeek Harness, das den groben Entwurf in deinem Eingabefeld zu einem Prompt macht, mit dem du tatsächlich arbeiten kannst. Bevor etwas ersetzt wird, prüfst du einen zeilenweisen Diff; danach hast du neun Sekunden Zeit für ein Undo, und das Plugin führt eine lokale Historie mit Versionsvergleich, bewertet das Ergebnis, hält eine zweite Fassung bereit und bringt 15 integrierte Vorlagen plus deine eigenen mit.
 
@@ -36,7 +36,7 @@ Die meisten Prompts, die „nicht funktionieren“, sind kein Modellproblem, son
 | Vorlagen | 15 integrierte, gruppiert als Basis / Struktur / Beispiele / Denken / Engineering / Text / Iterieren |
 | Eigene Vorlagen | Schreibe deine eigene Umschreib-Anweisung, speichere sie in diesem Browser, importiere und exportiere sie als JSON |
 | Modell festlegen | Dem Sitzungsmodell folgen oder eines nur für dieses Panel festlegen |
-| Zweisprachige UI (zh/en) | Folgt automatisch der Sprache der App |
+| UI in acht Sprachen | Folgt automatisch der Sprache der App (中文, English, 日本語, Español, Français, Deutsch, Русский, Português) |
 | Datenschutz | Historie standardmäßig aus; wenn aktiviert, bleibt sie in `localStorage` |
 
 ## Installation
@@ -57,8 +57,8 @@ Damit wird das veröffentlichte Paket installiert ([npm](https://www.npmjs.com/p
 ```bash
 git clone https://github.com/Minus77/dsh-prompt-optimize.git
 cd dsh-prompt-optimize
-npm pack          # produces minus77-dsh-prompt-optimize-0.3.0.tgz
-dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.3.0.tgz
+npm pack          # produces minus77-dsh-prompt-optimize-0.4.0.tgz
+dsh plugin --profile web add file:$PWD/minus77-dsh-prompt-optimize-0.4.0.tgz
 ```
 
 </details>

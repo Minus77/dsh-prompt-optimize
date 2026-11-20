@@ -1,6 +1,6 @@
 # Modèles
 
-[中文](./TEMPLATES.md) · [English](./TEMPLATES.en.md) · [Español](./TEMPLATES.es.md) · **Français** · [Deutsch](./TEMPLATES.de.md) · [Русский](./TEMPLATES.ru.md) · [日本語](./TEMPLATES.ja.md)
+[中文](./TEMPLATES.md) · [English](./TEMPLATES.en.md) · [Español](./TEMPLATES.es.md) · **Français** · [Deutsch](./TEMPLATES.de.md) · [Русский](./TEMPLATES.ru.md) · [日本語](./TEMPLATES.ja.md) · [Português (BR)](./TEMPLATES.pt.md)
 
 Le plugin fournit quinze modèles. Vous les changez depuis le coin supérieur droit du panneau de l'optimiseur ; en changer modifie **la façon dont le brouillon est réécrit**, jamais le brouillon lui-même.
 

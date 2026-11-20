@@ -1,6 +1,8 @@
 # Vorlagen
 
-Das Plugin bringt sieben Vorlagen mit. Du wechselst sie oben rechts im Optimizer-Panel; der Wechsel ändert **die Art, wie der Entwurf umgeschrieben wird**, nie den Entwurf selbst.
+[中文](./TEMPLATES.md) · [English](./TEMPLATES.en.md) · [Español](./TEMPLATES.es.md) · [Français](./TEMPLATES.fr.md) · **Deutsch** · [Русский](./TEMPLATES.ru.md) · [日本語](./TEMPLATES.ja.md) · [Português (BR)](./TEMPLATES.pt.md)
+
+Das Plugin bringt fünfzehn Vorlagen mit. Du wechselst sie oben rechts im Optimizer-Panel; der Wechsel ändert **die Art, wie der Entwurf umgeschrieben wird**, nie den Entwurf selbst.
 
 Jede Vorlage deckt einen anderen Aspekt desselben Problems ab:
 
