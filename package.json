@@ -11,7 +11,8 @@
     "./client": "./src/web.js",
     "./catalog": "./src/catalog.js",
     "./placeholders": "./src/placeholders.js",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json"
   },
   "dsh": {
     "client": {
@@ -57,6 +58,7 @@
   },
   "files": [
     "src",
+    "locale",
     "cordis.patch.yml",
     "assets/icon-180.png",
     "screenshots.json",

@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Prompt-Optimierer",
+    "description": "Schreibt einen Entwurf in einen präziseren Prompt um – mit Zeilendiff, Neun-Sekunden-Rückgängig, Verlauf, Vorlagen und Sechs-Dimensionen-Check."
+  }
+}

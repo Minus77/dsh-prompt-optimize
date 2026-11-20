@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Optimiseur de prompts",
+    "description": "Réécrit un brouillon en un prompt plus précis : diff ligne à ligne, annulation pendant neuf secondes, historique, modèles et analyse en six dimensions."
+  }
+}

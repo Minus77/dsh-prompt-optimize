@@ -111,3 +111,24 @@ test("time labels follow the dictionary", () => {
   assert.equal(client.__timeLabel(now - 30_000, (key) => (key === "刚刚" ? "just now" : key)), "just now");
   assert.match(client.__timeLabel(now - 5 * 60_000, (key) => (key === "分钟前" ? "min ago" : key)), /^5 min ago$/);
 });
+
+test("plugin cards have a locale file for every shipped language", async () => {
+  const { readdirSync, readFileSync } = await import("node:fs");
+  const dir = new URL("../locale/", import.meta.url);
+  const files = readdirSync(dir).filter((name) => name.endsWith(".json")).sort();
+  assert.deepEqual(files, LOCALES.map((locale) => `${locale}.json`).sort());
+  for (const name of files) {
+    const data = JSON.parse(readFileSync(new URL(name, dir), "utf8"));
+    assert.equal(typeof data.meta?.title, "string", `${name} title`);
+    assert.ok(data.meta.title.trim().length > 0, `${name} title is not empty`);
+    assert.equal(typeof data.meta?.description, "string", `${name} description`);
+    assert.ok(data.meta.description.trim().length > 0, `${name} description is not empty`);
+  }
+});
+
+test("package.json ships the locale files and exposes them to the host", async () => {
+  const { readFileSync } = await import("node:fs");
+  const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+  assert.equal(pkg.exports["./locale/*.json"], "./locale/*.json");
+  assert.ok(pkg.files.includes("locale"), "files includes locale");
+});

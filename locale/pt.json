@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Otimizador de prompts",
+    "description": "Reescreve um rascunho em um prompt mais preciso, com diff linha a linha, desfazer por nove segundos, histórico, modelos e revisão em seis dimensões."
+  }
+}

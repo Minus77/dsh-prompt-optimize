@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Prompt optimizer",
+    "description": "Rewrite a rough draft into a precise prompt, with a line diff, nine-second undo, version history, templates and a six-dimension checkup."
+  }
+}

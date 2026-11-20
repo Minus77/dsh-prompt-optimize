@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Optimizador de prompts",
+    "description": "Reescribe un borrador en un prompt más preciso, con diff línea a línea, deshacer durante nueve segundos, historial, plantillas y revisión en seis dimensiones."
+  }
+}
