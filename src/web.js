@@ -2146,6 +2146,8 @@ window.__ModuleLoader__.load({
             role: "dialog",
             "aria-label": T("提示词优化"),
             "aria-modal": "false",
+            // A body portal keeps the panel out of the header's drag region.
+            "data-window-drag-exclude": "",
             "data-view": review ? "review" : view,
             style: {
               left: anchor.left,
@@ -2172,6 +2174,7 @@ window.__ModuleLoader__.load({
       const menuNode = open && menu
         ? createPortal(h("div", {
           className: "po-menu",
+          "data-window-drag-exclude": "",
           style: { left: menu.left, width: menu.width, ...(menu.top !== undefined ? { top: menu.top } : { bottom: menu.bottom }) },
           role: "menu",
         }, (() => {
