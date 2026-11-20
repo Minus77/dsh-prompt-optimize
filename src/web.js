@@ -15,7 +15,7 @@ window.__ModuleLoader__.load({
     const ReactDOM = require("react-dom");
     const h = React.createElement;
     const createPortal = ReactDOM.createPortal ?? ReactDOM.default?.createPortal;
-    const { useCallback, useEffect, useMemo, useRef, useState } = React;
+    const { useCallback, useEffect, useRef, useState } = React;
 
     const MODELS_ROUTE = "/prompt-optimize/models";
     const OPTIMIZE_ROUTE = "/prompt-optimize/optimize";
@@ -241,7 +241,219 @@ window.__ModuleLoader__.load({
      * Copy
      * ------------------------------------------------------------------ */
 
-    const EN = {
+    /* ------------------------------------------------------------------ *
+     * Copy
+     * ------------------------------------------------------------------ */
+
+    /* shortcut: dictionaries live in this bundle, no build step to split them */
+    const NS = "promptOptimize";
+
+    /* @messages-start */
+    const MESSAGES = {
+      zh: {
+      "提示词优化": "提示词优化",
+      "提示词": "提示词",
+      "迭代优化": "迭代优化",
+      "优化结果": "优化结果",
+      "生成中": "生成中",
+      "原稿": "原稿",
+      "展开": "展开",
+      "收起": "收起",
+      "复制": "复制",
+      "已复制": "已复制",
+      "复制结果": "复制结果",
+      "替换草稿": "替换草稿",
+      "已替换草稿 · 9 秒内可撤销": "已替换草稿 · 9 秒内可撤销",
+      "发送": "发送",
+      "停止": "停止",
+      "重试": "重试",
+      "撤销": "撤销",
+      "关闭": "关闭",
+      "返回": "返回",
+      "优化历史": "优化历史",
+      "版本对比": "版本对比",
+      "清空": "清空",
+      "删除": "删除",
+      "写回": "写回",
+      "对比版本": "对比版本",
+      "跟随当前模型": "跟随当前模型",
+      "模板": "模板",
+      "模型": "模型",
+      "草稿已更新": "草稿已更新",
+      "模板已切换": "模板已切换",
+      "用新模板重跑": "用新模板重跑",
+      "开始迭代": "开始迭代",
+      "想在这一版上改什么？": "想在这一版上改什么？",
+      "例如：把语气改得更直接，删掉示例。": "例如：把语气改得更直接，删掉示例。",
+      "在输入框写点内容，打开后会自动优化": "在输入框写点内容，打开后会自动优化",
+      "正在准备…": "正在准备…",
+      "输入框还是空的": "输入框还是空的",
+      "写完草稿再打开，这里会给出更清楚的版本。": "写完草稿再打开，这里会给出更清楚的版本。",
+      "确认替换草稿": "确认替换草稿",
+      "替换后 9 秒内可撤销": "替换后 9 秒内可撤销",
+      "取消": "取消",
+      "可参数化片段": "可参数化片段",
+      "写回模板": "写回模板",
+      "写回后仍可继续编辑": "写回后仍可继续编辑",
+      "位置对不上，无法套用": "位置对不上，无法套用",
+      "抽取中…": "抽取中…",
+      "抽取变量": "抽取变量",
+      "保留优化记录？": "保留优化记录？",
+      "记录只留在这台电脑，不会上传。": "记录只留在这台电脑，不会上传。",
+      "不保留": "不保留",
+      "保留": "保留",
+      "要不要留着优化记录？": "要不要留着优化记录？",
+      "历史记录已关闭，可随时重新开启。": "历史记录已关闭，可随时重新开启。",
+      "开启历史": "开启历史",
+      "还没有记录": "还没有记录",
+      "每完成一次优化，这里会留一份。": "每完成一次优化，这里会留一份。",
+      "结构变化（本机分析）": "结构变化（本机分析）",
+      "原稿为空": "原稿为空",
+      "草稿为空": "草稿为空",
+      "没有可对比的版本": "没有可对比的版本",
+      "替换": "替换",
+      "保存": "保存",
+      "个变量": "个变量",
+      "版本": "版本",
+      "只改你指出的地方": "只改你指出的地方",
+      "刚刚": "刚刚",
+      "昨天": "昨天",
+      "分钟前": "分钟前",
+      "小时前": "小时前",
+      "字": "字",
+      "重试一次": "重试一次",
+      "模型没有返回内容": "模型没有返回内容",
+      "已替换": "已替换",
+      "优化中": "优化中",
+      "清空历史": "清空历史",
+      "确认清空": "确认清空",
+      "行未显示": "行未显示",
+      "适合": "适合",
+      "写一句修改意见再开始。": "写一句修改意见再开始。",
+      "删除这条": "删除这条",
+      "历史只存在本机": "历史只存在本机",
+      "再来一次": "再来一次",
+      "原样保留": "原样保留",
+      "新增": "新增",
+      "删除行": "删除行",
+      "结构": "结构",
+      "目标": "目标",
+      "约束": "约束",
+      "格式": "格式",
+      "示例": "示例",
+      "步骤": "步骤",
+      "边界": "边界",
+      "验收": "验收",
+      "体检": "体检",
+      "重新体检": "重新体检",
+      "体检中…": "体检中…",
+      "提示词体检": "提示词体检",
+      "体检失败": "体检失败",
+      "综合分": "综合分",
+      "清晰度": "清晰度",
+      "上下文": "上下文",
+      "输出格式": "输出格式",
+      "鲁棒性": "鲁棒性",
+      "高": "高",
+      "中": "中",
+      "低": "低",
+      "未发现问题": "未发现问题",
+      "这版已经没什么可挑的。": "这版已经没什么可挑的。",
+      "条建议，可直接替换": "条建议，可直接替换",
+      "应用": "应用",
+      "已应用": "已应用",
+      "位置已变，无法直接套用": "位置已变，无法直接套用",
+      "体检只读，不改动草稿": "体检只读，不改动草稿",
+      "再来一版": "再来一版",
+      "上一版": "上一版",
+      "最新": "最新",
+      "两版对比": "两版对比",
+      "本机分析": "本机分析",
+      "自定义": "自定义",
+      "新建自定义模板": "新建自定义模板",
+      "写好要求，以后一键复用": "写好要求，以后一键复用",
+      "自定义模板": "自定义模板",
+      "模板名称": "模板名称",
+      "例如：客服口吻": "例如：客服口吻",
+      "改写要求": "改写要求",
+      "例如：把语气改成客服口吻，结尾加一句道歉，不要超过 150 字。": "例如：把语气改成客服口吻，结尾加一句道歉，不要超过 150 字。",
+      "适用对象": "适用对象",
+      "导入 JSON": "导入 JSON",
+      "导出全部": "导出全部",
+      "写一句改写要求再保存。": "写一句改写要求再保存。",
+      "这个文件里没有可导入的模板。": "这个文件里没有可导入的模板。",
+      "导入失败": "导入失败",
+      "自定义模板只保存在这台浏览器里，不会上传。": "自定义模板只保存在这台浏览器里，不会上传。",
+      "换一版": "换一版",
+      "另一版": "另一版",
+      "基础": "基础",
+      "任务简报": "任务简报",
+      "目标、材料、交付、约束四段式，最通用的一档。": "目标、材料、交付、约束四段式，最通用的一档。",
+      "大多数「帮我做点什么」的草稿。": "大多数「帮我做点什么」的草稿。",
+      "补上模型只能靠猜的那部分信息。": "补上模型只能靠猜的那部分信息。",
+      "交付契约": "交付契约",
+      "把验收标准、输入输出和边界情况写在前面。": "把验收标准、输入输出和边界情况写在前面。",
+      "结果要交给别人用，错一点就要返工。": "结果要交给别人用，错一点就要返工。",
+      "先说清「怎样算完成」，再让模型动手。": "先说清「怎样算完成」，再让模型动手。",
+      "示范": "示范",
+      "示例引导": "示例引导",
+      "用两三个输入输出样例锁定风格与格式。": "用两三个输入输出样例锁定风格与格式。",
+      "你要的风格很难形容，但一看例子就懂。": "你要的风格很难形容，但一看例子就懂。",
+      "少写形容词，多给可对照的样例。": "少写形容词，多给可对照的样例。",
+      "推理": "推理",
+      "推理步骤": "推理步骤",
+      "要求模型分步执行并中途自检。": "要求模型分步执行并中途自检。",
+      "任务有多个环节，错一步后面全歪。": "任务有多个环节，错一步后面全歪。",
+      "把一次大跳跃拆成可检查的小台阶。": "把一次大跳跃拆成可检查的小台阶。",
+      "工程": "工程",
+      "代码审阅": "代码审阅",
+      "把「帮我看看这段代码」写成一次有范围、有优先级的审阅请求。": "把「帮我看看这段代码」写成一次有范围、有优先级的审阅请求。",
+      "要发一次代码审阅、PR 描述或安全复查。": "要发一次代码审阅、PR 描述或安全复查。",
+      "审阅范围、关注点顺序和交付格式都写死，避免泛泛而谈。": "审阅范围、关注点顺序和交付格式都写死，避免泛泛而谈。",
+      "实现任务": "实现任务",
+      "把编码需求补成含验收、接口与边界处理的工程说明。": "把编码需求补成含验收、接口与边界处理的工程说明。",
+      "要交给智能体或同事实现一个功能、修一个缺陷。": "要交给智能体或同事实现一个功能、修一个缺陷。",
+      "验收标准先行，减少「写完才发现不是这个意思」。": "验收标准先行，减少「写完才发现不是这个意思」。",
+      "SQL 查询": "SQL 查询",
+      "把一句取数需求写成口径、字段与性能约束都明确的查询任务。": "把一句取数需求写成口径、字段与性能约束都明确的查询任务。",
+      "要找数、做报表或核对口径。": "要找数、做报表或核对口径。",
+      "时间范围、去重和空值处理先说清，少返工。": "时间范围、去重和空值处理先说清，少返工。",
+      "结构化抽取": "结构化抽取",
+      "把「从这段里取几个字段」写成带 schema 与缺失规则的抽取任务。": "把「从这段里取几个字段」写成带 schema 与缺失规则的抽取任务。",
+      "要从邮件、网页或对话里批量取字段。": "要从邮件、网页或对话里批量取字段。",
+      "字段类型、枚举与缺失处理明确，输出可直接进程序。": "字段类型、枚举与缺失处理明确，输出可直接进程序。",
+      "测试设计": "测试设计",
+      "把测试需求写成覆盖正常、边界、异常与权限的用例表。": "把测试需求写成覆盖正常、边界、异常与权限的用例表。",
+      "功能要验收，或者要补一批回归用例。": "功能要验收，或者要补一批回归用例。",
+      "用例结构与优先级固定，覆盖不再靠临场想。": "用例结构与优先级固定，覆盖不再靠临场想。",
+      "写作": "写作",
+      "翻译本地化": "翻译本地化",
+      "把翻译需求写成带受众、术语表与格式约束的本地化任务。": "把翻译需求写成带受众、术语表与格式约束的本地化任务。",
+      "要翻文档、界面文案或商务邮件。": "要翻文档、界面文案或商务邮件。",
+      "保留变量与 Markdown 结构，不擅自增删内容。": "保留变量与 Markdown 结构，不擅自增删内容。",
+      "写作润色": "写作润色",
+      "把润色需求写成允许改动层级、禁止扩写的修订任务。": "把润色需求写成允许改动层级、禁止扩写的修订任务。",
+      "文章、公告或说明要改得更清楚，但事实不能动。": "文章、公告或说明要改得更清楚，但事实不能动。",
+      "先划清能改什么、不能改什么，避免被改写成另一篇。": "先划清能改什么、不能改什么，避免被改写成另一篇。",
+      "资料问答": "资料问答",
+      "把「根据这些资料回答」写成带引用与未覆盖声明的问答任务。": "把「根据这些资料回答」写成带引用与未覆盖声明的问答任务。",
+      "答案必须能追溯到给定资料。": "答案必须能追溯到给定资料。",
+      "资料没写到就说没写到，冲突时列出处。": "资料没写到就说没写到，冲突时列出处。",
+      "迭代": "迭代",
+      "增量改写": "增量改写",
+      "只改你指出的地方，其余原样保留。": "只改你指出的地方，其余原样保留。",
+      "上一版已经八九不离十，只差一两处。": "上一版已经八九不离十，只差一两处。",
+      "不让一次小修改把整段节奏改没。": "不让一次小修改把整段节奏改没。",
+      "角色设定": "角色设定",
+      "把一句角色描述写成智能体能长期执行的系统提示词。": "把一句角色描述写成智能体能长期执行的系统提示词。",
+      "你只有一个「让它当什么角色」的念头，细节还没想清。": "你只有一个「让它当什么角色」的念头，细节还没想清。",
+      "身份、职责、流程与边界一次补齐。": "身份、职责、流程与边界一次补齐。",
+      "Agent 人设": "Agent 人设",
+      "写成带说话方式与判断习惯的人格文件。": "写成带说话方式与判断习惯的人格文件。",
+      "你要的是一个有脾气、有取舍的长期搭档。": "你要的是一个有脾气、有取舍的长期搭档。",
+      "语气、原则、会做与不会做写得具体。": "语气、原则、会做与不会做写得具体。",
+      },
+      en: {
       "提示词优化": "Prompt optimizer",
       "提示词": "Prompt",
       "迭代优化": "Iterate",
@@ -254,7 +466,7 @@ window.__ModuleLoader__.load({
       "已复制": "Copied",
       "复制结果": "Copy result",
       "替换草稿": "Replace draft",
-        "已替换草稿 · 9 秒内可撤销": "Draft replaced · undo for 9s",
+      "已替换草稿 · 9 秒内可撤销": "Draft replaced · undo for 9s",
       "发送": "Send",
       "停止": "Stop",
       "重试": "Retry",
@@ -327,11 +539,11 @@ window.__ModuleLoader__.load({
       "原样保留": "kept as-is",
       "新增": "added",
       "删除行": "removed",
-      "结构": "structure",
+      "结构": "Structure",
       "目标": "goal",
-      "约束": "constraints",
+      "约束": "Constraints",
       "格式": "format",
-      "示例": "examples",
+      "示例": "Examples",
       "步骤": "steps",
       "边界": "limits",
       "验收": "acceptance",
@@ -344,8 +556,6 @@ window.__ModuleLoader__.load({
       "清晰度": "Clarity",
       "上下文": "Context",
       "输出格式": "Format",
-      "约束": "Constraints",
-      "示例": "Examples",
       "鲁棒性": "Robustness",
       "高": "High",
       "中": "Medium",
@@ -371,42 +581,85 @@ window.__ModuleLoader__.load({
       "改写要求": "Rewrite instruction",
       "例如：把语气改成客服口吻，结尾加一句道歉，不要超过 150 字。": "e.g. Use a support-agent tone, end with an apology, keep it under 150 words.",
       "适用对象": "Applies to",
-      "保存": "Save",
       "导入 JSON": "Import JSON",
       "导出全部": "Export all",
       "写一句改写要求再保存。": "Write an instruction before saving.",
       "这个文件里没有可导入的模板。": "This file has no templates to import.",
       "导入失败": "Import failed",
       "自定义模板只保存在这台浏览器里，不会上传。": "Custom templates stay in this browser; nothing is uploaded.",
+      "换一版": "Generate another version",
+      "另一版": "Another",
+      "基础": "Basics",
+      "任务简报": "Task brief",
+      "目标、材料、交付、约束四段式，最通用的一档。": "Goal, material, deliverable, constraints — the general-purpose rewrite.",
+      "大多数「帮我做点什么」的草稿。": "Most \"could you help me with…\" drafts.",
+      "补上模型只能靠猜的那部分信息。": "Fills in the parts the model would otherwise guess.",
+      "交付契约": "Delivery contract",
+      "把验收标准、输入输出和边界情况写在前面。": "Put acceptance criteria, inputs, outputs and edge cases up front.",
+      "结果要交给别人用，错一点就要返工。": "Someone else will consume the result and rework is expensive.",
+      "先说清「怎样算完成」，再让模型动手。": "Defines done before the model starts.",
+      "示范": "Examples",
+      "示例引导": "Worked examples",
+      "用两三个输入输出样例锁定风格与格式。": "Pin down style and format with two or three input/output samples.",
+      "你要的风格很难形容，但一看例子就懂。": "The style is hard to describe but obvious from an example.",
+      "少写形容词，多给可对照的样例。": "Fewer adjectives, more side-by-side samples.",
+      "推理": "Reasoning",
+      "推理步骤": "Reasoning steps",
+      "要求模型分步执行并中途自检。": "Ask the model to work in steps and check itself along the way.",
+      "任务有多个环节，错一步后面全歪。": "The task has stages, and one wrong step poisons the rest.",
+      "把一次大跳跃拆成可检查的小台阶。": "Splits one big leap into checkable steps.",
+      "工程": "Engineering",
+      "代码审阅": "Code review",
+      "把「帮我看看这段代码」写成一次有范围、有优先级的审阅请求。": "Turn \"can you look at this code\" into a scoped review request with priorities.",
+      "要发一次代码审阅、PR 描述或安全复查。": "You are asking for a review, a PR read, or a security pass.",
+      "审阅范围、关注点顺序和交付格式都写死，避免泛泛而谈。": "Pins the scope, the order of concerns and the report format.",
+      "实现任务": "Implementation task",
+      "把编码需求补成含验收、接口与边界处理的工程说明。": "Flesh a coding request out into an engineering brief with acceptance and interfaces.",
+      "要交给智能体或同事实现一个功能、修一个缺陷。": "An agent or teammate will implement a feature or fix a defect.",
+      "验收标准先行，减少「写完才发现不是这个意思」。": "Acceptance first, so the build does not miss the point.",
+      "SQL 查询": "SQL query",
+      "把一句取数需求写成口径、字段与性能约束都明确的查询任务。": "Make a data request explicit about grain, columns and performance limits.",
+      "要找数、做报表或核对口径。": "You need data, a report, or a definition checked.",
+      "时间范围、去重和空值处理先说清，少返工。": "Time range, dedupe and null handling settled before the query runs.",
+      "结构化抽取": "Structured extraction",
+      "把「从这段里取几个字段」写成带 schema 与缺失规则的抽取任务。": "Turn \"pull a few fields out of this\" into an extraction task with a schema.",
+      "要从邮件、网页或对话里批量取字段。": "You are pulling fields out of mail, pages or transcripts at volume.",
+      "字段类型、枚举与缺失处理明确，输出可直接进程序。": "Types, enums and missing-value rules make the output machine-usable.",
+      "测试设计": "Test design",
+      "把测试需求写成覆盖正常、边界、异常与权限的用例表。": "Write a test request that covers happy path, edges, failures and permissions.",
+      "功能要验收，或者要补一批回归用例。": "A feature is being accepted or a regression suite is missing.",
+      "用例结构与优先级固定，覆盖不再靠临场想。": "A fixed case structure and priority keep coverage from being improvised.",
+      "写作": "Writing",
+      "翻译本地化": "Translation",
+      "把翻译需求写成带受众、术语表与格式约束的本地化任务。": "Make a translation request specify audience, glossary and formatting.",
+      "要翻文档、界面文案或商务邮件。": "You are translating docs, UI copy or business mail.",
+      "保留变量与 Markdown 结构，不擅自增删内容。": "Keeps variables and Markdown intact instead of quietly rewriting.",
+      "写作润色": "Copy polish",
+      "把润色需求写成允许改动层级、禁止扩写的修订任务。": "Turn \"make this better\" into a revision task with explicit edit limits.",
+      "文章、公告或说明要改得更清楚，但事实不能动。": "A piece needs to read better without its facts moving.",
+      "先划清能改什么、不能改什么，避免被改写成另一篇。": "Draws the line between polish and rewrite up front.",
+      "资料问答": "Grounded Q&A",
+      "把「根据这些资料回答」写成带引用与未覆盖声明的问答任务。": "Make \"answer from these docs\" cite sources and admit gaps.",
+      "答案必须能追溯到给定资料。": "The answer has to be traceable to supplied material.",
+      "资料没写到就说没写到，冲突时列出处。": "Says when the material is silent, and lists sources on conflict.",
+      "迭代": "Iteration",
+      "增量改写": "Incremental edit",
+      "只改你指出的地方，其余原样保留。": "Change what you point at and leave the rest untouched.",
+      "上一版已经八九不离十，只差一两处。": "The last version is close and only one or two spots are off.",
+      "不让一次小修改把整段节奏改没。": "Keeps a small fix from rewriting the whole thing.",
+      "角色设定": "Role contract",
+      "把一句角色描述写成智能体能长期执行的系统提示词。": "Turn a one-line role idea into a system prompt an agent can follow for weeks.",
+      "你只有一个「让它当什么角色」的念头，细节还没想清。": "You know the role you want but none of the details yet.",
+      "身份、职责、流程与边界一次补齐。": "Identity, duties, workflow and limits in one pass.",
+      "Agent 人设": "Agent persona",
+      "写成带说话方式与判断习惯的人格文件。": "Write a persona file with a voice and a set of judgment habits.",
+      "你要的是一个有脾气、有取舍的长期搭档。": "You want a long-lived partner with a voice and opinions.",
+      "语气、原则、会做与不会做写得具体。": "Concrete tone, principles, and what it will refuse.",
+      },
     };
+    /* @messages-end */
 
-    function detectEnglish() {
-      const lang = document.documentElement?.lang || navigator.language || "";
-      return /^en(\b|-)/i.test(String(lang));
-    }
-
-    function useEnglish() {
-      const [english, setEnglish] = useState(detectEnglish);
-      useEffect(() => {
-        const read = () => setEnglish(detectEnglish());
-        const observer = typeof MutationObserver === "function"
-          ? new MutationObserver(read)
-          : null;
-        observer?.observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
-        return () => observer?.disconnect();
-      }, []);
-      return english;
-    }
-
-    function makeT(english) {
-      return (text) => (english ? EN[text] ?? text : text);
-    }
-
-    function pick(row, base, english) {
-      if (!row) return "";
-      const value = english ? row[`${base}En`] : row[base];
-      return typeof value === "string" && value.length > 0 ? value : row[base] ?? "";
-    }
+    const identityT = (key) => key;
 
     /* ------------------------------------------------------------------ *
      * Small pure helpers
@@ -449,24 +702,21 @@ window.__ModuleLoader__.load({
       return `${(ms / 1000).toFixed(ms < 10_000 ? 1 : 0)}s`;
     }
 
-    function timeLabel(timestamp, english) {
+    let activeLocale = "zh";
+
+    /** Locale-aware timestamps; the caller supplies t so it follows dictionary updates. */
+    function timeLabel(timestamp, t) {
       const then = new Date(timestamp);
       const now = new Date();
       const diff = now.getTime() - then.getTime();
-      if (diff < 60_000) return english ? "just now" : "刚刚";
-      if (diff < 3_600_000) {
-        const minutes = Math.floor(diff / 60_000);
-        return english ? `${minutes} min ago` : `${minutes} 分钟前`;
-      }
-      const sameDay = then.toDateString() === now.toDateString();
+      if (diff < 60_000) return t("刚刚");
+      if (diff < 3_600_000) return `${Math.floor(diff / 60_000)} ${t("分钟前")}`;
+      const hhmm = new Intl.DateTimeFormat(activeLocale, { hour: "2-digit", minute: "2-digit", hour12: false }).format(then);
+      if (then.toDateString() === now.toDateString()) return hhmm;
       const yesterday = new Date(now);
       yesterday.setDate(now.getDate() - 1);
-      const hhmm = `${String(then.getHours()).padStart(2, "0")}:${String(then.getMinutes()).padStart(2, "0")}`;
-      if (sameDay) return hhmm;
-      if (then.toDateString() === yesterday.toDateString()) return english ? `Yesterday ${hhmm}` : `昨天 ${hhmm}`;
-      return english
-        ? `${["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][then.getMonth()]} ${then.getDate()}`
-        : `${then.getMonth() + 1} 月 ${then.getDate()} 日`;
+      if (then.toDateString() === yesterday.toDateString()) return `${t("昨天")} ${hhmm}`;
+      return new Intl.DateTimeFormat(activeLocale, { month: "short", day: "numeric" }).format(then);
     }
 
     function clip(text) {
@@ -980,8 +1230,7 @@ window.__ModuleLoader__.load({
 
     function PromptOptimizer(props) {
       ensureStyle();
-      const english = useEnglish();
-      const T = useMemo(() => makeT(english), [english]);
+      const T = typeof props.t === "function" ? props.t : identityT;
 
       const useInput = props.useInput;
       const inputActions = props.inputActions;
@@ -1194,7 +1443,7 @@ window.__ModuleLoader__.load({
           parentId: parent?.id ?? "",
           at: Date.now(),
           mode,
-          template: pick(template, "label", english),
+          template: template.label,
           templateId: template.id,
           model: typeof model === "string" ? model : "",
           input: clip(sourceText),
@@ -1708,7 +1957,7 @@ window.__ModuleLoader__.load({
           "aria-expanded": menu?.name === "template" ? "true" : "false",
           onClick: (event) => toggleMenu("template", event),
         },
-          h("span", null, templateRow ? pick(templateRow, "label", english) : T("模板")),
+          h("span", null, templateRow ? T(templateRow.label) : T("模板")),
           h(Icon, { name: "chevronDown", size: 12 }),
         ),
       ) : null;
@@ -1918,9 +2167,9 @@ window.__ModuleLoader__.load({
           },
             h("div", { className: "po-hmain" },
               h("div", { className: "po-hline" },
-                h("span", null, timeLabel(entry.at, english)),
+                h("span", null, timeLabel(entry.at, T)),
                 h("span", null, "·"),
-                h("span", null, entry.template || entry.templateId),
+                h("span", null, T(entry.template || entry.templateId)),
                 h("span", { className: "po-spacer" }),
                 h("span", null, `${delta >= 0 ? "+" : ""}${delta} ${T("字")}`),
               ),
@@ -1977,7 +2226,7 @@ window.__ModuleLoader__.load({
             style: { marginLeft: 0 },
             onClick: (event) => toggleMenu("version", event),
           },
-            h("span", null, `v${Math.max(1, chain.findIndex((row) => row.id === cmpEntry.id) + 1)} · ${timeLabel(cmpEntry.at, english)}`),
+            h("span", null, `v${Math.max(1, chain.findIndex((row) => row.id === cmpEntry.id) + 1)} · ${timeLabel(cmpEntry.at, T)}`),
             h(Icon, { name: "chevronDown", size: 12 }),
           ),
           h("div", { className: "po-spacer" }),
@@ -2102,7 +2351,7 @@ window.__ModuleLoader__.load({
           h("span", null, parsePin(pin) ? modelLabel(panelCatalog, pin) : T("跟随当前模型")),
           h(Icon, { name: "chevronDown", size: 11 }),
         ),
-        h("span", { className: "po-meta", title: templateRow ? pick(templateRow, "useWhen", english) : "" }, templateRow ? pick(templateRow, "useWhen", english) : ""),
+        h("span", { className: "po-meta", title: templateRow ? T(templateRow.useWhen) : "" }, templateRow ? T(templateRow.useWhen) : ""),
         h("div", { className: "po-spacer" }),
         busy
           ? h(Button, { onClick: () => abortRef.current?.abort(), icon: "stop" }, T("停止"))
@@ -2211,8 +2460,8 @@ window.__ModuleLoader__.load({
                 key: entry.id,
                 checked,
                 onClick: () => { setCmpId(entry.id); setMenu(null); },
-                title: `v${version} · ${timeLabel(entry.at, english)}`,
-                notes: [entry.template],
+                title: `v${version} · ${timeLabel(entry.at, T)}`,
+                notes: [T(entry.template)],
               });
             });
           }
@@ -2228,8 +2477,8 @@ window.__ModuleLoader__.load({
               key: row.id,
               checked,
               onClick: () => pickTemplate(row.id),
-              title: pick(row, "label", english),
-              notes: [pick(row, "description", english), `${T("适合")}：${pick(row, "useWhen", english)}`],
+              title: T(row.label),
+              notes: [T(row.description), `${T("适合")}：${T(row.useWhen)}`],
             }));
           }
           items.push(h("div", { key: "c-custom", className: "po-menugroup" }, T("自定义")));
@@ -2285,17 +2534,27 @@ window.__ModuleLoader__.load({
     const exports = {
       PromptOptimizer,
       apply(ctx) {
+        const readLocale = () => {
+          const active = ctx.locale?.getSnapshot?.().active;
+          if (typeof active === "string" && active) activeLocale = active;
+        };
+        readLocale();
+        ctx.effect(() => ctx.locale.subscribe(readLocale), "prompt-optimize: follow the locale preference");
+        ctx.effect(() => ctx.locale.register(NS, MESSAGES), "prompt-optimize: dictionaries");
         ctx.slots.inject("conversation.input.right", () => ctx.slots.register({
           name: "conversation.input.right",
           id: "prompt-optimize",
           order: 5,
+          locale: NS,
         }, PromptOptimizer));
       },
-      inject: ["slots"],
+      inject: ["slots", "locale"],
       __diffLines: diffLines,
       __collapseDiff: collapseDiff,
       __analyzeChange: analyzeChange,
       __usageLabel: usageLabel,
+      __messages: MESSAGES,
+      __ns: NS,
       __timeLabel: timeLabel,
     };
     return exports;
