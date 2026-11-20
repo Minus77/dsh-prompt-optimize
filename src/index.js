@@ -45,16 +45,21 @@ function readBounded(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
     let size = 0;
+    let tooLarge = false;
     req.on("data", (chunk) => {
+      // Stop buffering, but keep draining the socket so the 413 below can still
+      // be delivered: destroying the request makes the client see EPIPE instead.
+      if (tooLarge) return;
       size += chunk.length;
       if (size > MAX_BODY_BYTES) {
-        req.destroy();
+        tooLarge = true;
+        chunks.length = 0;
         resolve(null);
         return;
       }
       chunks.push(chunk);
     });
-    req.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+    req.on("end", () => resolve(tooLarge ? null : Buffer.concat(chunks).toString("utf8")));
     req.on("error", reject);
   });
 }
