@@ -123,6 +123,20 @@ async function readJsonBody(req) {
   }
 }
 
+/** Read one JSON object body; every POST route needs the same three checks. */
+async function readObjectBody(req) {
+  requireJson(req);
+  const body = await readJsonBody(req);
+  if (typeof body !== "object" || body === null || Array.isArray(body)) {
+    throw new RequestError(400, "invalid-body", "请求体必须是一个 JSON 对象。");
+  }
+  return body;
+}
+
+function readSessionId(value) {
+  return typeof value === "string" && value.length > 0 && value.length <= 200 ? value : undefined;
+}
+
 function readText(value, label, { required = false } = {}) {
   if (value === undefined || value === null) {
     if (required) throw new RequestError(400, "missing-field", `缺少 ${label}。`);
@@ -161,6 +175,19 @@ function optionalPin(body) {
     throw new RequestError(400, "invalid-pin", "provider 或 model 太长。");
   }
   return { provider, model };
+}
+
+/** The model this request runs on: the pinned one, else the profile default. */
+function resolveRoute(pin, ctx) {
+  const route = pin ?? currentRoute(ctx);
+  if (!route) {
+    throw new RequestError(
+      503,
+      "no-model",
+      "没有可用的默认模型：请在设置里选择一个默认模型，或在面板里指定模型后重试。",
+    );
+  }
+  return route;
 }
 
 /**
@@ -218,9 +245,7 @@ function readOptimizeRequest(body) {
     if (templateId.length === 0) throw new RequestError(400, "no-template", "这个优化对象还没有可用模板。");
   }
 
-  const sessionId = typeof body.sessionId === "string" && body.sessionId.length > 0 && body.sessionId.length <= 200
-    ? body.sessionId
-    : undefined;
+  const sessionId = readSessionId(body.sessionId);
 
   return {
     mode,
@@ -277,7 +302,42 @@ function finishFailure(finish) {
 }
 
 /**
- * Register the three routes.
+ * Abort the model call when the client goes away: a dropped request and a
+ * closed response both mean nobody is reading the answer.
+ * @param {import('node:http').IncomingMessage} req
+ * @param {import('node:http').ServerResponse} res
+ */
+function abortOnClose(req, res) {
+  const controller = new AbortController();
+  const abort = () => controller.abort(new Error("client disconnected"));
+  req.on("aborted", abort);
+  res.on("close", abort);
+  return controller;
+}
+
+/** One model call: every route sends the same envelope, only the prompt differs. */
+function callModel(ctx, route, { system, user, maxTokens, sessionId, signal, emit }) {
+  return consume(ctx.llm.stream({
+    provider: route.provider,
+    model: route.model,
+    system,
+    messages: [{ role: "user", content: [{ type: "text", text: user }] }],
+    maxTokens,
+    signal,
+    ...(sessionId ? { sessionId } : {}),
+  }), emit);
+}
+
+function usagePayload(usage) {
+  return usage === null ? undefined : {
+    inputTokens: usage.inputTokens,
+    outputTokens: usage.outputTokens,
+    ...(usage.totalTokens === undefined ? {} : { totalTokens: usage.totalTokens }),
+  };
+}
+
+/**
+ * Register the four routes.
  * @param {object} ctx
  */
 export function apply(ctx) {
@@ -347,17 +407,8 @@ export function apply(ctx) {
         sendMethodNotAllowed(res, "POST");
         return;
       }
-      requireJson(req);
-      const request = readOptimizeRequest(await readJsonBody(req));
-
-      const route = request.pin ?? currentRoute(ctx);
-      if (!route) {
-        throw new RequestError(
-          503,
-          "no-model",
-          "没有可用的默认模型：请在设置里选择一个默认模型，或在面板里指定模型后重试。",
-        );
-      }
+      const request = readOptimizeRequest(await readObjectBody(req));
+      const route = resolveRoute(request.pin, ctx);
 
       const { system, user } = request.custom
         ? buildCustomPrompt(request.custom, {
@@ -371,12 +422,7 @@ export function apply(ctx) {
           iterateInput: request.iterateInput,
         });
 
-      const controller = new AbortController();
-      const abort = () => {
-        if (!res.writableEnded) controller.abort(new Error("client disconnected"));
-      };
-      req.on("aborted", abort);
-      res.on("close", abort);
+      const controller = abortOnClose(req, res);
 
       res.writeHead(200, {
         "content-type": "application/x-ndjson; charset=utf-8",
@@ -392,15 +438,14 @@ export function apply(ctx) {
 
       let result;
       try {
-        result = await consume(ctx.llm.stream({
-          provider: route.provider,
-          model: route.model,
+        result = await callModel(ctx, route, {
           system,
-          messages: [{ role: "user", content: [{ type: "text", text: user }] }],
+          user,
           maxTokens: MAX_TOKENS,
+          sessionId: request.sessionId,
           signal: controller.signal,
-          ...(request.sessionId ? { sessionId: request.sessionId } : {}),
-        }), emit);
+          emit,
+        });
       } catch (error) {
         if (controller.signal.aborted) {
           res.end();
@@ -438,11 +483,7 @@ export function apply(ctx) {
         text,
         model: `${route.provider}/${route.model}`,
         truncated: result.finish?.kind === "max-tokens",
-        usage: result.usage === null ? undefined : {
-          inputTokens: result.usage.inputTokens,
-          outputTokens: result.usage.outputTokens,
-          ...(result.usage.totalTokens === undefined ? {} : { totalTokens: result.usage.totalTokens }),
-        },
+        usage: usagePayload(result.usage),
       });
       res.end();
     }),
@@ -457,11 +498,7 @@ export function apply(ctx) {
         sendMethodNotAllowed(res, "POST");
         return;
       }
-      requireJson(req);
-      const body = await readJsonBody(req);
-      if (typeof body !== "object" || body === null || Array.isArray(body)) {
-        throw new RequestError(400, "invalid-body", "请求体必须是一个 JSON 对象。");
-      }
+      const body = await readObjectBody(req);
       const promptContent = readText(body.promptContent, "promptContent", { required: true });
       const existingNames = Array.isArray(body.existingVariableNames)
         ? body.existingVariableNames
@@ -470,31 +507,21 @@ export function apply(ctx) {
           .slice(0, 50)
         : [];
 
-      const route = optionalPin(body) ?? currentRoute(ctx);
-      if (!route) {
-        throw new RequestError(
-          503,
-          "no-model",
-          "没有可用的默认模型：请在设置里选择一个默认模型，或在面板里指定模型后重试。",
-        );
-      }
+      const route = resolveRoute(optionalPin(body), ctx);
 
       const { system, user } = buildExtractionPrompt({ promptContent, existingNames });
-      const controller = new AbortController();
-      req.on("aborted", () => controller.abort(new Error("client disconnected")));
+      const controller = abortOnClose(req, res);
 
-      const result = await consume(ctx.llm.stream({
-        provider: route.provider,
-        model: route.model,
+      const result = await callModel(ctx, route, {
         system,
-        messages: [{ role: "user", content: [{ type: "text", text: user }] }],
+        user,
         maxTokens: MAX_TOKENS,
+        sessionId: readSessionId(body.sessionId),
         signal: controller.signal,
-        ...(typeof body.sessionId === "string" && body.sessionId.length > 0 && body.sessionId.length <= 200
-          ? { sessionId: body.sessionId }
-          : {}),
-      }), () => {});
+        emit: () => {},
+      });
 
+      if (controller.signal.aborted) throw new RequestError(499, "aborted", "抽取被中止。");
       const failure = finishFailure(result.finish);
       if (failure) throw new RequestError(502, "model-failure", failure);
 
@@ -526,39 +553,22 @@ export function apply(ctx) {
         sendMethodNotAllowed(res, "POST");
         return;
       }
-      requireJson(req);
-      const body = await readJsonBody(req);
-      if (typeof body !== "object" || body === null || Array.isArray(body)) {
-        throw new RequestError(400, "invalid-body", "请求体必须是一个 JSON 对象。");
-      }
+      const body = await readObjectBody(req);
       const promptContent = readText(body.promptContent, "promptContent", { required: true });
 
-      const route = optionalPin(body) ?? currentRoute(ctx);
-      if (!route) {
-        throw new RequestError(
-          503,
-          "no-model",
-          "没有可用的默认模型：请在设置里选择一个默认模型，或在面板里指定模型后重试。",
-        );
-      }
+      const route = resolveRoute(optionalPin(body), ctx);
 
       const { system, user } = buildReviewPrompt({ promptContent });
-      const controller = new AbortController();
-      const abort = () => controller.abort(new Error("client disconnected"));
-      req.on("aborted", abort);
-      res.on("close", abort);
+      const controller = abortOnClose(req, res);
 
-      const result = await consume(ctx.llm.stream({
-        provider: route.provider,
-        model: route.model,
+      const result = await callModel(ctx, route, {
         system,
-        messages: [{ role: "user", content: [{ type: "text", text: user }] }],
+        user,
         maxTokens: MAX_REVIEW_TOKENS,
+        sessionId: readSessionId(body.sessionId),
         signal: controller.signal,
-        ...(typeof body.sessionId === "string" && body.sessionId.length > 0 && body.sessionId.length <= 200
-          ? { sessionId: body.sessionId }
-          : {}),
-      }), () => {});
+        emit: () => {},
+      });
 
       if (controller.signal.aborted) throw new RequestError(499, "aborted", "体检被中止。");
       const failure = finishFailure(result.finish);
@@ -578,11 +588,7 @@ export function apply(ctx) {
       sendJson(res, 200, {
         ...review,
         model: `${route.provider}/${route.model}`,
-        usage: result.usage === null ? undefined : {
-          inputTokens: result.usage.inputTokens,
-          outputTokens: result.usage.outputTokens,
-          ...(result.usage.totalTokens === undefined ? {} : { totalTokens: result.usage.totalTokens }),
-        },
+        usage: usagePayload(result.usage),
       });
     }),
   }), `prompt-optimize: POST ${REVIEW_ROUTE}`);
