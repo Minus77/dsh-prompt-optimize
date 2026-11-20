@@ -271,9 +271,6 @@ export function buildPrompt(templateId, input) {
   return { system: builder.system, user: builder.user(input) };
 }
 
-/** The template id used for placeholder extraction. */
-export const EXTRACTION_TEMPLATE = "variable-extraction";
-
 /**
  * Build the placeholder-extraction request.
  * @param {{ promptContent: string, existingNames?: string[] }} input
@@ -300,15 +297,6 @@ export function buildExtractionPrompt({ promptContent, existingNames = [] }) {
 }
 
 /**
- * Build the read-only checkup request.
- *
- * The model is asked for one strict JSON object; `normalizeReview` in
- * `review.js` is what makes the answer safe to render and to apply, so this
- * prompt only has to be precise about the requested shape.
- *
- * @param {{ promptContent: string }} input
- */
-/**
  * A user-defined template: the only thing the user supplies is the rewrite
  * instruction, so it gets the same data fence and the same output rules as the
  * built-in builders.
@@ -330,6 +318,15 @@ export function buildCustomPrompt(custom, { originalPrompt, lastOptimizedPrompt,
   return { system: CUSTOM_SYSTEM, user: parts.join("\n\n") };
 }
 
+/**
+ * Build the read-only checkup request.
+ *
+ * The model is asked for one strict JSON object; `normalizeReview` in
+ * `review.js` is what makes the answer safe to render and to apply, so this
+ * prompt only has to be precise about the requested shape.
+ *
+ * @param {{ promptContent: string }} input
+ */
 export function buildReviewPrompt({ promptContent }) {
   const system = [
     "你是提示词审阅员。用户给你一段准备发给智能体的提示词，你要指出它具体哪里会导致执行偏差。",

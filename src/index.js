@@ -8,9 +8,9 @@
  *   POST /prompt-optimize/review    read-only checkup with applyable fixes, JSON
  */
 
-import { buildCatalog } from "./catalog.js";
+import { buildCatalog, currentModel } from "./catalog.js";
 import { buildCustomPrompt, buildExtractionPrompt, buildPrompt, buildReviewPrompt } from "./prompts.js";
-import { applyVariables, parseVariables } from "./placeholders.js";
+import { applyVariables, parseVariables, stripFence } from "./placeholders.js";
 import { normalizeReview, parseReviewJson } from "./review.js";
 import { defaultTemplateFor, getTemplate, templateMatchesMode } from "./spec.js";
 
@@ -73,12 +73,6 @@ function sendJson(res, status, payload) {
 function sendMethodNotAllowed(res, allow) {
   res.setHeader("allow", allow);
   sendJson(res, 405, { code: "method-not-allowed", message: `只支持 ${allow} 请求。` });
-}
-
-function stripWrappingFence(text) {
-  const trimmed = text.trim();
-  const fenced = /^```[a-zA-Z0-9_-]*\s*\n([\s\S]*?)\n```$/.exec(trimmed);
-  return fenced ? fenced[1].trim() : trimmed;
 }
 
 /**
@@ -150,20 +144,6 @@ function readText(value, label, { required = false } = {}) {
   return value;
 }
 
-/** The profile's default model, or null when none is configured. */
-function currentRoute(ctx) {
-  try {
-    const selection = ctx.agentDefaultModel?.currentSelection?.();
-    if (selection && typeof selection.provider === "string" && selection.provider.length > 0
-      && typeof selection.model === "string" && selection.model.length > 0) {
-      return { provider: selection.provider, model: selection.model };
-    }
-  } catch {
-    // Treat an unreadable selection like an absent one.
-  }
-  return null;
-}
-
 function optionalPin(body) {
   const provider = typeof body.provider === "string" ? body.provider.trim() : "";
   const model = typeof body.model === "string" ? body.model.trim() : "";
@@ -179,7 +159,7 @@ function optionalPin(body) {
 
 /** The model this request runs on: the pinned one, else the profile default. */
 function resolveRoute(pin, ctx) {
-  const route = pin ?? currentRoute(ctx);
+  const route = pin ?? currentModel(ctx.agentDefaultModel);
   if (!route) {
     throw new RequestError(
       503,
@@ -468,7 +448,7 @@ export function apply(ctx) {
         return;
       }
 
-      const text = unwrapJsonText(stripWrappingFence(result.text));
+      const text = unwrapJsonText(stripFence(result.text));
       if (text.length === 0) {
         emit({
           type: "error",

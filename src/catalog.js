@@ -10,7 +10,7 @@ import { MODES, catalogTemplates, DEFAULT_TEMPLATE } from "./spec.js";
  * @param {{ currentSelection?: () => { provider?: unknown, model?: unknown } }} service
  * @returns {{ provider: string, model: string } | null}
  */
-function readDefault(service) {
+export function currentModel(service) {
   try {
     const selection = service?.currentSelection?.();
     if (selection && typeof selection.provider === "string" && typeof selection.model === "string"
@@ -56,7 +56,7 @@ async function readGroups(llm) {
  * @returns {Promise<object>}
  */
 export async function buildCatalog({ llm, defaultModel }) {
-  const [current, groups] = [readDefault(defaultModel), await readGroups(llm)];
+  const [current, groups] = [currentModel(defaultModel), await readGroups(llm)];
   return {
     current,
     groups,

@@ -271,9 +271,6 @@ const ALIASES = Object.freeze({
   "iterate": "iterate-tweak",
 });
 
-/** All built-in template ids, in catalog order. */
-export const TEMPLATE_IDS = Object.freeze(TEMPLATES.map((entry) => entry.id));
-
 /**
  * Resolve one template by id or alias.
  * @param {string} id
