@@ -41,7 +41,7 @@ La mayoría de los prompts que “no funcionan” no son un problema del modelo,
 
 ## Instalación
 
-Requiere DeepSeek Harness `>= 0.1.7-0` y Node.js `>= 18`.
+Requiere DeepSeek Harness `>= 0.2.2-rc.5` y Node.js `>= 24.9`.
 
 ### 1. Instalar desde npm (recomendado)
 

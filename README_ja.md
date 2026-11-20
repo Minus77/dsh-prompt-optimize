@@ -38,7 +38,7 @@
 
 ## インストール
 
-DeepSeek Harness `>= 0.1.7-0` と Node.js `>= 18` が必要です。
+DeepSeek Harness `>= 0.2.2-rc.5` と Node.js `>= 24.9` が必要です。
 
 ### 1. npmからインストールする（推奨）
 

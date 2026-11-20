@@ -41,7 +41,7 @@ Most prompts that "don't work" are not a model problem — they are a draft prob
 
 ## Install
 
-Requires DeepSeek Harness `>= 0.1.7-0` and Node.js `>= 18`.
+Requires DeepSeek Harness `>= 0.2.2-rc.5` and Node.js `>= 24.9`.
 
 ### 1. Install from npm (recommended)
 

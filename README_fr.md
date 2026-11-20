@@ -41,7 +41,7 @@ La plupart des prompts qui « ne fonctionnent pas » ne relèvent pas d'un probl
 
 ## Installation
 
-Nécessite DeepSeek Harness `>= 0.1.7-0` et Node.js `>= 18`.
+Nécessite DeepSeek Harness `>= 0.2.2-rc.5` et Node.js `>= 24.9`.
 
 ### 1. Installation depuis npm (recommandé)
 

@@ -1,6 +1,6 @@
 {
   "name": "@minus77/dsh-prompt-optimize",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Prompt optimizer for DeepSeek Harness: rewrite a rough draft into a precise prompt, review a line diff, undo within nine seconds, with version history, a template library and a bilingual UI.",
   "type": "module",
   "license": "MIT",
@@ -28,13 +28,13 @@
     }
   },
   "engines": {
-    "dsh": ">=0.1.7-0",
-    "node": ">=18"
+    "dsh": ">=0.2.2-rc.5",
+    "node": ">=24.9.0"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "*",
     "@deepseek-ai/dsh-client-runtime": "*",
-    "@deepseek-ai/dsh-llm": ">=0.1.7-0",
+    "@deepseek-ai/dsh-llm": ">=0.2.2-rc.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
