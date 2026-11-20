@@ -789,19 +789,9 @@ window.__ModuleLoader__.load({
       return final;
     }
 
-    async function extractPlaceholders(body, signal) {
-      const response = await fetch(VARIABLES_ROUTE, {
-        method: "POST",
-        headers: { "content-type": "application/json", accept: "application/json" },
-        body: JSON.stringify(body),
-        signal,
-      });
-      if (!response.ok) throw new Error(await readError(response));
-      return response.json();
-    }
-
-    async function fetchReview(body, signal) {
-      const response = await fetch(REVIEW_ROUTE, {
+    /** POST JSON to one of the JSON routes; a failed status becomes its message. */
+    async function postJson(route, body, signal) {
+      const response = await fetch(route, {
         method: "POST",
         headers: { "content-type": "application/json", accept: "application/json" },
         body: JSON.stringify(body),
@@ -942,6 +932,24 @@ window.__ModuleLoader__.load({
         title,
         ...rest,
       }, icon ? h(Icon, { name: icon, size: 13 }) : null, children);
+    }
+
+    /** One row in the model, version or template menu. */
+    function menuRow({ key, checked, icon, onClick, title, notes = [] }) {
+      const mark = icon ?? (checked ? "check" : null);
+      return h("button", {
+        key,
+        type: "button",
+        className: "po-menuitem",
+        ...(checked === undefined ? {} : { "data-checked": checked ? "true" : "false" }),
+        onClick,
+      },
+        h("span", { className: "po-menucheck" }, mark ? h(Icon, { name: mark, size: 12 }) : null),
+        h("span", { className: "po-mi" },
+          h("strong", null, title),
+          ...notes.map((note, index) => h("small", { key: index }, note)),
+        ),
+      );
     }
 
     function IconButton({ name, label, onClick, disabled, active, size = 14 }) {
@@ -1427,14 +1435,19 @@ window.__ModuleLoader__.load({
         }, UNDO_MS);
       }
 
-      function confirmReplace() {
-        if (!result) return;
-        writeDraft(result);
+      /** Write the result back, flash, and close on every path that accepts it. */
+      function commit(next) {
+        writeDraft(next);
         setFlash("done");
         later(() => setFlash(""), 1800);
+        close();
+      }
+
+      function confirmReplace() {
+        if (!result) return;
         setVars(null);
         setReview(false);
-        close();
+        commit(result);
       }
 
       function undo() {
@@ -1463,7 +1476,7 @@ window.__ModuleLoader__.load({
         setVars(null);
         setError("");
         try {
-          const payload = await extractPlaceholders({
+          const payload = await postJson(VARIABLES_ROUTE, {
             promptContent: result,
             ...(parsePin(pin) ?? {}),
             ...(sessionId ? { sessionId } : {}),
@@ -1488,7 +1501,7 @@ window.__ModuleLoader__.load({
         setCheckError("");
         setCheck(null);
         try {
-          const payload = await fetchReview({
+          const payload = await postJson(REVIEW_ROUTE, {
             promptContent: result,
             ...(parsePin(pin) ?? {}),
             ...(sessionId ? { sessionId } : {}),
@@ -1530,10 +1543,7 @@ window.__ModuleLoader__.load({
 
       function applyTemplated() {
         if (!vars || typeof vars.templated !== "string") return;
-        writeDraft(vars.templated);
-        setFlash("done");
-        later(() => setFlash(""), 1800);
-        close();
+        commit(vars.templated);
       }
 
       function toggleMenu(name, event) {
@@ -1585,10 +1595,7 @@ window.__ModuleLoader__.load({
       }
 
       function restore(entry) {
-        writeDraft(entry.output);
-        setFlash("done");
-        later(() => setFlash(""), 1800);
-        close();
+        commit(entry.output);
       }
 
       function removeEntry(id) {
@@ -2169,32 +2176,25 @@ window.__ModuleLoader__.load({
           role: "menu",
         }, (() => {
           if (menu.name === "model") {
-            const items = [h("button", {
+            const items = [menuRow({
               key: "auto",
-              type: "button",
-              className: "po-menuitem",
-              "data-checked": parsePin(pin) ? "false" : "true",
+              checked: !parsePin(pin),
               onClick: () => choosePin(""),
-            },
-              h("span", { className: "po-menucheck" }, parsePin(pin) ? null : h(Icon, { name: "check", size: 12 })),
-              h("span", { className: "po-mi" }, h("strong", null, T("跟随当前模型")),
-                h("small", null, panelCatalog.current ? `${panelCatalog.current.provider}/${panelCatalog.current.model}` : "")),
-            )];
+              title: T("跟随当前模型"),
+              notes: [panelCatalog.current ? `${panelCatalog.current.provider}/${panelCatalog.current.model}` : ""],
+            })];
             for (const group of panelCatalog.groups ?? []) {
               items.push(h("div", { key: `g-${group.provider}`, className: "po-menugroup" }, group.name));
               for (const model of group.models) {
                 const value = `${group.provider}/${model.id}`;
                 const checked = pin === value;
-                items.push(h("button", {
+                items.push(menuRow({
                   key: value,
-                  type: "button",
-                  className: "po-menuitem",
-                  "data-checked": checked ? "true" : "false",
+                  checked,
                   onClick: () => choosePin(value),
-                },
-                  h("span", { className: "po-menucheck" }, checked ? h(Icon, { name: "check", size: 12 }) : null),
-                  h("span", { className: "po-mi" }, h("strong", null, model.name), h("small", null, model.id)),
-                ));
+                  title: model.name,
+                  notes: [model.id],
+                }));
               }
             }
             if (items.length === 1) items.push(h("p", { key: "empty", className: "po-note", style: { padding: "8px" } }, T("正在准备…")));
@@ -2204,19 +2204,13 @@ window.__ModuleLoader__.load({
             return chain.slice().reverse().map((entry) => {
               const version = chain.findIndex((row) => row.id === entry.id) + 1;
               const checked = entry.id === cmpEntry?.id;
-              return h("button", {
+              return menuRow({
                 key: entry.id,
-                type: "button",
-                className: "po-menuitem",
-                "data-checked": checked ? "true" : "false",
+                checked,
                 onClick: () => { setCmpId(entry.id); setMenu(null); },
-              },
-                h("span", { className: "po-menucheck" }, checked ? h(Icon, { name: "check", size: 12 }) : null),
-                h("span", { className: "po-mi" },
-                  h("strong", null, `v${version} · ${timeLabel(entry.at, english)}`),
-                  h("small", null, entry.template),
-                ),
-              );
+                title: `v${version} · ${timeLabel(entry.at, english)}`,
+                notes: [entry.template],
+              });
             });
           }
           const items = [];
@@ -2227,50 +2221,32 @@ window.__ModuleLoader__.load({
               items.push(h("div", { key: `c-${row.category}`, className: "po-menugroup" }, T(row.category)));
             }
             const checked = row.id === templateRow?.id;
-            items.push(h("button", {
+            items.push(menuRow({
               key: row.id,
-              type: "button",
-              className: "po-menuitem",
-              "data-checked": checked ? "true" : "false",
+              checked,
               onClick: () => pickTemplate(row.id),
-            },
-              h("span", { className: "po-menucheck" }, checked ? h(Icon, { name: "check", size: 12 }) : null),
-              h("span", { className: "po-mi" },
-                h("strong", null, pick(row, "label", english)),
-                h("small", null, pick(row, "description", english)),
-                h("small", null, `${T("适合")}：${pick(row, "useWhen", english)}`),
-              ),
-            ));
+              title: pick(row, "label", english),
+              notes: [pick(row, "description", english), `${T("适合")}：${pick(row, "useWhen", english)}`],
+            }));
           }
           items.push(h("div", { key: "c-custom", className: "po-menugroup" }, T("自定义")));
           for (const row of customRows) {
             const checked = row.id === templateRow?.id;
-            items.push(h("button", {
+            items.push(menuRow({
               key: row.id,
-              type: "button",
-              className: "po-menuitem",
-              "data-checked": checked ? "true" : "false",
+              checked,
               onClick: () => pickTemplate(row.id),
-            },
-              h("span", { className: "po-menucheck" }, checked ? h(Icon, { name: "check", size: 12 }) : null),
-              h("span", { className: "po-mi" },
-                h("strong", null, row.label),
-                h("small", null, row.instruction),
-              ),
-            ));
+              title: row.label,
+              notes: [row.instruction],
+            }));
           }
-          items.push(h("button", {
+          items.push(menuRow({
             key: "c-manage",
-            type: "button",
-            className: "po-menuitem",
+            icon: "plus",
             onClick: () => openEditor(null),
-          },
-            h("span", { className: "po-menucheck" }, h(Icon, { name: "plus", size: 12 })),
-            h("span", { className: "po-mi" },
-              h("strong", null, T("新建自定义模板")),
-              h("small", null, T("写好要求，以后一键复用")),
-            ),
-          ));
+            title: T("新建自定义模板"),
+            notes: [T("写好要求，以后一键复用")],
+          }));
           return items;
         })()), document.body)
         : null;
